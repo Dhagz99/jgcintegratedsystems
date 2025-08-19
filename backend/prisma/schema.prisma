@@ -1,0 +1,208 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db{
+    provider = "postgresql"
+    url = env("DATABASE_URL")
+}
+
+enum Role {
+  Admin
+  User
+  Branch
+  Coordinator
+  Superadmin
+}
+
+enum Statuses {
+  PENDING
+  INPROGRESS
+  CANCEL
+  APPROVED
+  REJECTED
+  EMPTY
+}
+
+model User {
+  id         Int      @id @default(autoincrement())
+  name       String
+  email      String   @unique
+  username   String   @unique
+  password   String
+  role       Role     @default(User)
+  branchId   Int?     @map("branch_id")
+  branch     Branch?  @relation(fields: [branchId], references: [id], onDelete: SetNull)
+
+  createdAt  DateTime @default(now()) @map("created_at")
+  updateAt   DateTime @updatedAt      @map("update_at")
+
+  checker    RequestChecker[]
+  mainForm    MainRequest[]
+
+  @@index([branchId])
+  @@map("users")
+}
+
+model Branch {
+  id         Int      @id @default(autoincrement())
+  branchCode String   @unique
+  branchName String
+  bom        String
+  faa        String
+  telephone String
+  address String
+  companyName String
+  createdAt  DateTime @default(now()) @map("created_at")
+  updateAt   DateTime @updatedAt      @map("update_at")
+  users      User[]
+  main      MainRequest[]
+
+  @@map("branches")
+}
+
+model RequestType {
+  id               Int    @id @default(autoincrement())
+  requestName      String @unique
+
+  // FK scalar fields
+  notedById        Int?
+  checkedById      Int?
+  checkedBy2Id     Int?
+  recomApprovalId  Int?
+  recomApproval2Id Int?
+  approveById      Int?
+
+  // Relation fields (named because they all point to RequestChecker)
+  notedBy        RequestChecker? @relation("NotedBy",        fields: [notedById],        references: [id], onDelete: SetNull)
+  checkedBy      RequestChecker? @relation("CheckedBy",      fields: [checkedById],      references: [id], onDelete: SetNull)
+  checkedBy2     RequestChecker? @relation("CheckedBy2",     fields: [checkedBy2Id],     references: [id], onDelete: SetNull)
+  recomApproval  RequestChecker? @relation("RecomApproval",  fields: [recomApprovalId],  references: [id], onDelete: SetNull)
+  recomApproval2 RequestChecker? @relation("RecomApproval2", fields: [recomApproval2Id], references: [id], onDelete: SetNull)
+  approveBy      RequestChecker? @relation("ApproveBy",      fields: [approveById],      references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updateAt  DateTime @updatedAt
+
+
+   mainRequests  MainRequest[] @relation("MainRequest_RequestType")
+
+  @@map("request_types")
+  // (optional) add indexes to speed up joins/lookups:
+  @@index([notedById])
+  @@index([checkedById])
+  @@index([checkedBy2Id])
+  @@index([recomApprovalId])
+  @@index([recomApproval2Id])
+  @@index([approveById])
+}
+
+model RequestChecker {
+  id        Int    @id @default(autoincrement())
+  userId   Int? @unique    @map("user_id")
+  checkerName     User?  @relation(fields: [userId], references: [id], onDelete: SetNull)
+  position  String
+  initial   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  notedByForTypes        RequestType[] @relation("NotedBy")
+  checkedByForTypes      RequestType[] @relation("CheckedBy")
+  checkedBy2ForTypes     RequestType[] @relation("CheckedBy2")
+  recomApprovalForTypes  RequestType[] @relation("RecomApproval")
+  recomApproval2ForTypes RequestType[] @relation("RecomApproval2")
+  approveByForTypes      RequestType[] @relation("ApproveBy")
+
+
+  formRequestFundTo FormFundTransfer[] @relation("FormFund_RequestCheckerTo")
+
+  requestLogs      RequestLogs[]
+
+  @@index([userId])
+
+  @@map("request_checker")
+}
+
+model MainRequest {
+  id             Int          @id @default(autoincrement())
+  requestTypeId  Int?         @map("request_type_id")
+  requestById Int? @map("request_by_id")
+  requestFromId Int? @map("requestFrom")
+  status Statuses @default(PENDING)
+  requestDate DateTime @map("request_date")
+  remarks String?
+  createdAt  DateTime @default(now()) @map("created_at")
+  updateAt   DateTime @updatedAt      @map("update_at")
+
+  requestType    RequestType? @relation("MainRequest_RequestType", fields: [requestTypeId], references: [id], onDelete: SetNull)
+  fundTransfer  FormFundTransfer? @relation("Form_FundTransfer")
+  requestBy User? @relation(fields: [requestById], references: [id], onDelete: SetNull)
+
+  requestFrom Branch? @relation(fields: [requestFromId], references: [id], onDelete: SetNull)
+
+  approval      ApprovalTable[]
+
+
+  @@map("main_request")
+  @@index([requestTypeId])
+  @@index([requestById])
+  @@index([requestFromId])
+}
+
+model FormFundTransfer {
+  id Int @id @default(autoincrement())
+  mainRequestID Int? @unique @map("main_reqeust_id")
+  requestToId Int?  @map("request_to_id")
+  requestContent String @map("request_content")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updateAt   DateTime @updatedAt      @map("update_at")
+
+  mainRequest   MainRequest? @relation("Form_FundTransfer", fields: [mainRequestID], references: [id], onDelete: SetNull)
+  requestTo   RequestChecker? @relation("FormFund_RequestCheckerTo", fields: [requestToId], references: [id], onDelete: SetNull)
+
+   @@map("form_fund_transfer")
+   
+   @@index([mainRequestID])
+   @@index([requestToId])
+
+}
+
+
+model ApprovalTable {
+  id Int @id @default(autoincrement())
+  mainFormId Int? @unique @map("main_form_id")
+  notedBy Statuses @default(PENDING) @map("noted_by")
+  checkedBy Statuses @default(PENDING) @map("checked_by")
+  checkedBy2 Statuses @default(PENDING) @map("checked_by2")
+  recomApproval Statuses @default(PENDING) @map("recom_approval")
+  recomApproval2 Statuses @default(PENDING) @map("recom_approval2")
+  approveBy Statuses @default(PENDING) @map("approve_by")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updateAt   DateTime @updatedAt      @map("update_at")
+
+  mainRequest MainRequest? @relation(fields: [mainFormId], references: [id], onDelete: SetNull)
+  
+
+  requestLogs  RequestLogs[]
+  @@index([mainFormId])
+  @@map("approval_table")
+
+
+}
+
+model RequestLogs {
+  id  Int @id @default(autoincrement())
+  approvalId Int? @map("approval_id")
+  checkerType String @map("checker_type")
+  approverId Int? @map("approver_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  approval ApprovalTable? @relation(fields: [approvalId], references: [id], onDelete: SetNull)
+  approver RequestChecker? @relation(fields: [approverId], references: [id], onDelete: SetNull)
+
+  @@index([approvalId])
+  @@index([approverId])
+  @@map("request_logs")
+
+
+}
