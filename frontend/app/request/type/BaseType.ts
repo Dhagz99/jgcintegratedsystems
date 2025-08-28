@@ -1,3 +1,5 @@
+import { Users } from "./RequestType";
+
 export type ApproverRole = {
     id: number;
     userId: number;
@@ -27,5 +29,7 @@ export type ApproverRole = {
     requestContent: string;
     createdAt: string;
     updateAt: string;
+
+    requestTo: Users | null;
   };
   

@@ -25,12 +25,12 @@ export default function SidebarMenu() {
   }
 
   return (
-    <div className="flex flex-col mt-1">
+    <div className="flex flex-col mt-1 w-14 sm:w-40 transition-all duration-300">
       <div className="text-[#A1A1A1] text-xs pb-1">Menu</div>
       {menuItems.map(({ label, icon: Icon, path }) => {
         const isActive = active === label; 
         const itemClasses = `
-          text-xs  flex gap-2 items-center p-1.5 cursor-pointer rounded-sm
+          text-xs  flex gap-2 items-center p-1.5 cursor-pointer rounded-sm  justify-center sm:justify-start
           ${isActive
             ? 'bg-[#32B695] text-white font-semibold'
             : 'text-[#7A7979] hover:bg-[#CCF8DD]'}
@@ -45,7 +45,7 @@ export default function SidebarMenu() {
               className={isActive ? 'text-white' : 'text-[#7A7979]'}
               style={iconStyle}
             />
-            <p>{label}</p>
+            <p className= ' hidden sm:block'>{label}</p>
           </div>
         );
       })}

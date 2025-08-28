@@ -10,10 +10,10 @@ import {
   type CreateBranchInput,
   type UpdateBranchInput,
 }  from "../../lib/request.schema";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { SaveAs, Close } from "@mui/icons-material";
 import ButtonComponents from "../../components/Buttons";
-import { FormsInputs, FormsSelect } from "../../components/FormsInputs";
+import { FormsCheckBox, FormsInputs, FormsSelect } from "../../components/FormsInputs";
 import { showSuccess } from "../../components/ToastAlert";
 import { useAddBranch, useAddUser, useFetchBranches, useFetchChecker, useUpdateBranch } from "../../hooks/useRequest";
 import { CreateUser, createUserSchema, updateUserSchema } from "@/lib/schemas";
@@ -28,6 +28,18 @@ type Props = {
 };
 
 export default function AddAccountModal({ onClose, selectedData }: Props) {
+  const [preview, setPreview] = useState<string | null>(null);
+  const [file, setFile] = useState<File | null>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0];
+    if (f && f.type === "image/png") {
+      setFile(f);
+      setPreview(URL.createObjectURL(f));
+    } else {
+      alert("Only PNG allowed");
+    }
+  };
   const isEdit = !!selectedData;
   // pick schema based on mode
   const schema = useMemo(
@@ -41,6 +53,7 @@ export default function AddAccountModal({ onClose, selectedData }: Props) {
     register,
     handleSubmit,
     reset,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
     resolver: zodResolver(schema as any),
@@ -56,7 +69,12 @@ export default function AddAccountModal({ onClose, selectedData }: Props) {
      // @ts-ignore
       role: "User",
        // @ts-ignore
-       branchName : "",
+      branchName : "",
+      // @ts-ignore
+      position : "",
+      // @ts-ignore
+      initial : "",
+       approver : false,
     },
   });
 
@@ -64,8 +82,9 @@ export default function AddAccountModal({ onClose, selectedData }: Props) {
   useEffect(() => {
     if (selectedData) {
       // Only keep fields that exist in the schema
-      const { id, name, email, username, role, branchId } = selectedData;
-      reset({ id, name, email, username, role, branchId } as FormValues);
+      const { id, name, email, username, role, branchId, position, initial, approver } = selectedData;
+      reset({ id, name, email, username, role, branchId, position, initial, approver } as FormValues);
+      setPreview(selectedData.signatureUrl);
     }
   }, [selectedData, reset]);
 
@@ -84,7 +103,10 @@ export default function AddAccountModal({ onClose, selectedData }: Props) {
     //     }
     //   );
     } else {
-        addUser(data as CreateUser, {
+      const formData = new FormData();
+      Object.entries(data).forEach(([k, v]) => formData.append(k, v as string));
+      if (file) formData.append("signature", file);
+        addUser(formData, {
         onSuccess: () => {
           showSuccess({ message: "Branch added successfully!", position: "top-center" });
           onClose();
@@ -103,15 +125,11 @@ export default function AddAccountModal({ onClose, selectedData }: Props) {
   ];
 
   const { data: branches = [], isLoading } = useFetchBranches();
-
   const checkerData: Option1[] = branches.map(c => ({
     id: c.id ?? "",    
     name: c.branchName ?? ""
   }));
 
-  const handleBranchChange = (value: Option1) => {
-    console.log("selected value:", value);
-}
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -143,25 +161,55 @@ export default function AddAccountModal({ onClose, selectedData }: Props) {
                 error={errors.role}
             />
         </div>
-        <div className="col-span-4">
-            <Controller
-            name="branchId"
-            control={control}
-            render={({ field, fieldState }) => (
-              <SearchableInput
-                data={checkerData}
-                label="Branch"
-                placeholder="Select branch..."
-                // pass RHF-controlled props directly
-                name={field.name}
-                value={field.value}
-                onChange={field.onChange}
-                inputRef={field.ref}
-                error={fieldState.error}
-                />
-              )}
-             />
-        </div>
+        {watch('role') === 'Branch' &&(
+          <div className="col-span-4">
+              <Controller
+              name="branchId"
+              control={control}
+              render={({ field, fieldState }) => (
+                <SearchableInput
+                  data={checkerData}
+                  label="Branch"
+                  placeholder="Select branch..."
+                  // pass RHF-controlled props directly
+                  name={field.name}
+                  value={field.value}
+                  onChange={field.onChange}
+                  inputRef={field.ref}
+                  error={fieldState.error}
+                  />
+                )}
+              />
+      </div>
+        )}
+      
+    <div className="col-span-4">
+    <FormsInputs
+          label="Position"
+          placeholder="Enter position"
+          error={errors.position}
+          register={register("position")}
+          type="text"
+        />
+   
+      </div>
+    <div className="col-span-4">
+    <FormsInputs
+          label="Initial"
+          placeholder="Enter initial"
+          error={errors.initial}
+          register={register("initial")}
+          type="text"
+        />
+    </div>
+    <div className="col-span-4">
+    <FormsCheckBox
+            label="User Types"
+            placeholder="Checker & Approver"
+            error={errors.approver}
+            register={register("approver")} 
+        />
+    </div>
         <div className="col-span-4">
         <FormsInputs
           label="Username"
@@ -176,10 +224,33 @@ export default function AddAccountModal({ onClose, selectedData }: Props) {
             label="Password"
                 placeholder="Enter password"
             error={errors.password}
-            type="text"
+            type="password"
             register={register("password")}
+            
             />
         </div>
+        <div className="col-span-12">
+      <div className="flex items-center justify-center border-2 border-gray-300 h-30 relative overflow-hidden rounded-md">
+        {/* Input */}
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleFileChange}
+          className="absolute inset-0 opacity-0 cursor-pointer"
+        />
+
+        {/* Preview */}
+        {preview ? (
+          <img
+            src={preview}
+            alt="Preview"
+            className="max-h-full max-w-full object-contain"
+          />
+        ) : (
+          <p className="text-gray-500 text-sm">Click to upload e-signature</p>
+        )}
+      </div>
+    </div>
     
       
       </div>

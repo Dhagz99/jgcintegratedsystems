@@ -4,102 +4,102 @@ import { requestTypeSchema } from "../lib/request.schema";
 
 const prisma = new PrismaClient();
 
-export const addChecker = async (req: Request, res: Response) => {
-  const { userId, position, initial } = req.body;
-  try {
-    const existing = await prisma.requestChecker.findUnique({ where: { userId } });
-    if (existing) return res.status(400).json({ message: 'Name already exists' });
+// export const addChecker = async (req: Request, res: Response) => {
+//   const { userId, position, initial } = req.body;
+//   try {
+//     const existing = await prisma.requestChecker.findUnique({ where: { userId } });
+//     if (existing) return res.status(400).json({ message: 'Name already exists' });
 
-    const checker = await prisma.requestChecker.create({
-      data: { userId, position, initial },
-    });
+//     const checker = await prisma.requestChecker.create({
+//       data: { userId, position, initial },
+//     });
     
-    const io = req.app.get("io"); // Get Socket.IO instance from Express
-    io.emit("notification", {
-      message: `✅ Checker "${checker.userId}" added successfully!`,
-    });
+//     const io = req.app.get("io"); // Get Socket.IO instance from Express
+//     io.emit("notification", {
+//       message: `✅ Checker "${checker.userId}" added successfully!`,
+//     });
 
-    return res.status(201).json({
-      message: 'Checker created',
-      checker: {
-        name: checker.userId,
-        position: checker.position,
-        initial: checker.initial
-      }
-    });
-  } catch (err) {
-    console.error("Error adding checker:", err);
-    return res.status(500).json({ message: "Internal server error" });
-  }
-};
+//     return res.status(201).json({
+//       message: 'Checker created',
+//       checker: {
+//         name: checker.userId,
+//         position: checker.position,
+//         initial: checker.initial
+//       }
+//     });
+//   } catch (err) {
+//     console.error("Error adding checker:", err);
+//     return res.status(500).json({ message: "Internal server error" });
+//   }
+// };
 
-export const fetchChecker = async(req: Request, res: Response) =>{
-    try {
-        const checker = await prisma.requestChecker.findMany({
-          include: {
-            checkerName: { select: { name: true } },
-          }
-        });
-        res.status(200).json(checker);
-    }catch (error){
-        console.error("Error fetching branches:", error);
-        res.status(500).json({message: "Internal server error"});
-    }
-}
+// export const fetchChecker = async(req: Request, res: Response) =>{
+//     try {
+//         const checker = await prisma.requestChecker.findMany({
+//           include: {
+//             checkerName: { select: { name: true } },
+//           }
+//         });
+//         res.status(200).json(checker);
+//     }catch (error){
+//         console.error("Error fetching branches:", error);
+//         res.status(500).json({message: "Internal server error"});
+//     }
+// }
 
-export const deleteChecker = async (req: Request, res: Response) => {
-  try {
-    const id = Number(req.params.id);
-    if (isNaN(id)) return res.status(400).json({ error: 'Invalid ID' });
+// export const deleteChecker = async (req: Request, res: Response) => {
+//   try {
+//     const id = Number(req.params.id);
+//     if (isNaN(id)) return res.status(400).json({ error: 'Invalid ID' });
 
-    const io = req.app.get("io"); // ✅ Good: get io instance from app
+//     const io = req.app.get("io"); // ✅ Good: get io instance from app
 
-    const deleted = await prisma.requestChecker.delete({
-      where: { id },
-    });
+//     const deleted = await prisma.requestChecker.delete({
+//       where: { id },
+//     });
 
-    io.emit("notification", {
-      message: `✅ Deleted "${id}" added successfully!`,
-    });
-
-
-    return res.status(200).json({
-      message: 'Deleted successfully',
-      data: deleted,
-    });
-  } catch (error) {
-    console.error('Delete error:', error);
-    return res.status(500).json({ error: 'Server error' });
-  }
-};
+//     io.emit("notification", {
+//       message: `✅ Deleted "${id}" added successfully!`,
+//     });
 
 
+//     return res.status(200).json({
+//       message: 'Deleted successfully',
+//       data: deleted,
+//     });
+//   } catch (error) {
+//     console.error('Delete error:', error);
+//     return res.status(500).json({ error: 'Server error' });
+//   }
+// };
 
-export const updateChecker = async (req: Request, res: Response) => {
-  try {
-    const id = Number(req.params.id);
-    const { userId, position, initial } = req.body;
 
-    if (isNaN(id)) return res.status(400).json({ error: 'Invalid ID' });
 
-    const io = req.app.get('io'); // 🔁 Get Socket.IO instance
+// export const updateChecker = async (req: Request, res: Response) => {
+//   try {
+//     const id = Number(req.params.id);
+//     const { userId, position, initial } = req.body;
 
-    const updated = await prisma.requestChecker.update({
-      where: { id },
-      data: { userId, position, initial },
-    });
+//     if (isNaN(id)) return res.status(400).json({ error: 'Invalid ID' });
 
-    // 🔁 Notify all clients that the checker was updated
-    io.emit("notification", {
-      message: `✅ Update "${id}"  successfully!`,
-    });
+//     const io = req.app.get('io'); // 🔁 Get Socket.IO instance
 
-    return res.status(200).json({ message: 'Checker updated', data: updated });
-  } catch (error) {
-    console.error('Update error:', error);
-    return res.status(500).json({ error: 'Server error' });
-  }
-};
+//     const updated = await prisma.requestChecker.update({
+//       where: { id },
+//       data: { userId, position, initial },
+//     });
+
+//     // 🔁 Notify all clients that the checker was updated
+//     io.emit("notification", {
+//       message: `✅ Update "${id}"  successfully!`,
+//     });
+
+//     return res.status(200).json({ message: 'Checker updated', data: updated });
+//   } catch (error) {
+//     console.error('Update error:', error);
+//     return res.status(500).json({ error: 'Server error' });
+//   }
+// };
 
 
 
@@ -266,12 +266,12 @@ export const fetchListRequestTypes = async (_req: Request, res: Response) => {
     const types = await prisma.requestType.findMany({
       orderBy: { createdAt: "desc" },
       include: {
-        notedBy:       { include: { checkerName: { select: { id: true, name: true } } } },
-        checkedBy:     { include: { checkerName: { select: { id: true, name: true } } } },
-        checkedBy2:    { include: { checkerName: { select: { id: true, name: true } } } },
-        recomApproval: { include: { checkerName: { select: { id: true, name: true } } } },
-        recomApproval2:{ include: { checkerName: { select: { id: true, name: true } } } },
-        approveBy:     { include: { checkerName: { select: { id: true, name: true } } } },
+        notedBy: { select: { id: true, name: true, initial: true, position: true } },       // 👈 join to user
+        checkedBy: { select: { id: true,  name: true, initial: true, position: true} },
+        checkedBy2: { select: { id: true, name: true, initial: true, position: true } },
+        recomApproval: { select: { id: true, name: true, initial: true, position: true } },
+        recomApproval2: { select: { id: true, name: true, initial: true, position: true } },
+        approveBy: { select: { id: true, name: true, initial: true, position: true } },
       },
     });
     return res.json({ data: types });

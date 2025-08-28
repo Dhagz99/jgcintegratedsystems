@@ -25,9 +25,10 @@ export async function updateData<TReq, TRes>(url: string, data: TReq): Promise<T
     url: string,
     params?: Record<string, any>
   ): Promise<TRes> {
-    const res = await api.get<ApiResponse<TRes>>(url, { params });
-    return res.data.data; // ✅ unwrap once
+    const res = await api.get<TRes>(url, { params });
+    return res.data; 
   }
+  
   
 
 

@@ -20,14 +20,18 @@ export interface BranchDTO {
   updateAt: string;  // ISO
 }
 
-export interface PublicUserDTO {
+export interface  PublicUserDTO {
   id: number;
   name: string;
   email: string;
   username: string;
+  position: string;
+  initial: string;
+  approver: Boolean;
   role: Role;
   branchId: number | null;
   createdAt: string; // ISO
   updateAt: string;  // ISO
   branch: BranchDTO | null;
+  signatureUrl: string;
 }

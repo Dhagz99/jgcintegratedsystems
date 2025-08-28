@@ -3,24 +3,24 @@ import ButtonComponents from "../../components/Buttons";
 import { CreateFundTrasnfer } from "../../lib/request.schema";
 import { RequestTypeDTO } from "../../type/RequestType";
 import { FormattedDate } from "@/app/utils/DateFormatter";
-import { useAddFundTransfer, useFetchBranches, useFetchChecker } from "../../hooks/useRequest";
+import { useAddFundTransfer, useFetchBranches, useFetchChecker, useFetchUserList } from "../../hooks/useRequest";
 import { useFetchUser } from "@/hooks/useAuth";
 import { showSuccess } from "../../components/ToastAlert";
 
 type FormProps = {
-  requestType: RequestTypeDTO | null;
-  formData: CreateFundTrasnfer | null;
+  requestType?: RequestTypeDTO | null;
+  formData?: CreateFundTrasnfer | null;
   onClose?: () => void;
   onReset?: () => void;
 }
 
 export default function ViewFundTransfer ({requestType, formData, onClose, onReset} : FormProps){
-    const { data: checkers = [] } = useFetchChecker();
+     const {data: checkers, isLoading: checkerLoading} = useFetchUserList();
     const { data: branches = [] } = useFetchBranches();
     const { data: user , isLoading: userLoading } = useFetchUser();
     const {mutate: addFundTransfer, isPending: isAdding} = useAddFundTransfer();
 
-    const checker = checkers.find(c => c.id === formData?.requestToId);
+    const checker = checkers?.find(c => c.id === formData?.requestToId) ?? null;
     const branch = branches.find(b => b.id === formData?.requestFromId);
 
     const handleSubmint = () => {
@@ -37,7 +37,6 @@ export default function ViewFundTransfer ({requestType, formData, onClose, onRes
             }
           }) 
     }
-      console.log("formdata : ", formData);
 
     return(
         <div className="flex flex-col px-10 overflow-auto max-h-150">
@@ -50,7 +49,7 @@ export default function ViewFundTransfer ({requestType, formData, onClose, onRes
                     <p className="w-20">To</p>
                     <p>:</p>
                     <div className="flex flex-col">
-                        <p>{checker?.checkerName?.name ?? ''}</p>
+                        <p>{checker?.name ?? ''}</p>
                         <p className="text-center">{checker?.position ?? ''}</p>
                     </div>
                 </div>
@@ -106,7 +105,7 @@ export default function ViewFundTransfer ({requestType, formData, onClose, onRes
                         <p>Recommending Approval</p>
                             <div className="flex flex-col">
                                 <p className="font-extrabold">
-                                     {requestType?.recomApproval?.checkerName?.name ?? ''}
+                                     {requestType?.recomApproval?.name ?? ''}
                                 </p>
                                 <p className="font-bold">
                                      {requestType?.recomApproval?.position?? ''}
@@ -116,7 +115,7 @@ export default function ViewFundTransfer ({requestType, formData, onClose, onRes
                         <div className="flex flex-col">
                             <div className="flex flex-col">
                                 <p className="font-extrabold">
-                                     {requestType?.recomApproval2?.checkerName?.name ?? ''}
+                                     {requestType?.recomApproval2?.name ?? ''}
                                 </p>
                                 <p className="font-bold">
                                       {requestType?.recomApproval2?.position ?? ''}
@@ -129,7 +128,7 @@ export default function ViewFundTransfer ({requestType, formData, onClose, onRes
                             <p>Approved by:</p>
                                 <div className="flex flex-col">
                                     <p className="font-extrabold">
-                                          {requestType?.approveBy?.checkerName?.name ?? ''}
+                                          {requestType?.approveBy?.name ?? ''}
                                     </p>
                                     <p className="font-bold">
                                         {requestType?.approveBy?.position ?? ''}

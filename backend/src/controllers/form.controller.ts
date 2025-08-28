@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient, Statuses } from "@prisma/client";
 import type { Response } from "express";
 import type { AuthRequest } from "../middleware/auth.middleware";
 import { findNextApprover } from "../utils/FindNextApprover";
@@ -25,12 +25,12 @@ export const addFundTransfer = async (req: AuthRequest, res: Response) => {
     const reqType = await prisma.requestType.findUnique({
       where: { id: Number(requestTypeId) },
       select: {
-        notedBy: { select: { userId: true } },       // 👈 join to user
-        checkedBy: { select: { userId: true } },
-        checkedBy2: { select: { userId: true } },
-        recomApproval: { select: { userId: true } },
-        recomApproval2: { select: { userId: true } },
-        approveBy: { select: { userId: true } },
+        notedBy: { select: { id: true, name: true } },       // 👈 join to user
+        checkedBy: { select: { id: true,  name: true} },
+        checkedBy2: { select: { id: true, name: true } },
+        recomApproval: { select: { id: true, name: true } },
+        recomApproval2: { select: { id: true, name: true } },
+        approveBy: { select: { id: true, name: true } },
       },
     });
 
@@ -53,12 +53,12 @@ export const addFundTransfer = async (req: AuthRequest, res: Response) => {
         },
         approval: {
           create: {
-            notedBy: reqType.notedBy?.userId ? "PENDING" : "EMPTY",
-            checkedBy: reqType.checkedBy?.userId ? "PENDING" : "EMPTY",
-            checkedBy2: reqType.checkedBy2?.userId ? "PENDING" : "EMPTY",
-            recomApproval: reqType.recomApproval?.userId ? "PENDING" : "EMPTY",
-            recomApproval2: reqType.recomApproval2?.userId ? "PENDING" : "EMPTY",
-            approveBy: reqType.approveBy?.userId ? "PENDING" : "EMPTY",
+            notedBy: reqType.notedBy?.id ? "PENDING" : "EMPTY",
+            checkedBy: reqType.checkedBy?.id ? "PENDING" : "EMPTY",
+            checkedBy2: reqType.checkedBy2?.id ? "PENDING" : "EMPTY",
+            recomApproval: reqType.recomApproval?.id ? "PENDING" : "EMPTY",
+            recomApproval2: reqType.recomApproval2?.id ? "PENDING" : "EMPTY",
+            approveBy: reqType.approveBy?.id ? "PENDING" : "EMPTY",
           },
         },
         
@@ -128,6 +128,10 @@ export const getRequestsForApprover = async (req: AuthRequest, res: Response) =>
         },
         requestBy: { select: { id: true, name: true } },
       },
+
+      orderBy: {
+        id: 'desc',   
+      },
     });
 
     // Filter: only keep requests where the NEXT approver is this user
@@ -143,3 +147,217 @@ export const getRequestsForApprover = async (req: AuthRequest, res: Response) =>
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+
+
+// ✅ Build a reusable type for mainRequest with relations
+type MainRequestWithRelations = Prisma.MainRequestGetPayload<{
+  include: {
+    fundTransfer: true;
+    approval: true;
+    requestFrom: true;
+    requestType: {
+      include: {
+        notedBy: true;
+        checkedBy: true;
+        checkedBy2: true;
+        recomApproval: true;
+        recomApproval2: true;
+        approveBy: true;
+      };
+    };
+    requestBy: { select: { id: true; name: true } };
+  };
+}>;
+
+// ✅ Helper to check if user has already acted
+function hasUserWithStatus(req: MainRequestWithRelations, userId: number, status: string): boolean {
+  const approval = req.approval[0];
+  const type = req.requestType;
+  if (!approval || !type) return false; // no approval rows or no request type
+
+  return (
+    (type.notedBy?.id === userId && approval.notedBy === status) ||
+    (type.checkedBy?.id === userId && approval.checkedBy === status) ||
+    (type.checkedBy2?.id === userId && approval.checkedBy2 === status) ||
+    (type.recomApproval?.id === userId && approval.recomApproval === status) ||
+    (type.recomApproval2?.id === userId && approval.recomApproval2 === status) ||
+    (type.approveBy?.id === userId && approval.approveBy === status)
+  );
+}
+
+
+// ✅ Controller to get requests where user has already acted (with pagination)
+export const getRequestsByUserStatus = async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = req.user?.id;
+    if (!userId) return res.status(401).json({ message: "Unauthorized" });
+
+    // --- Query params ---
+    const status = (req.query.status as string)?.toUpperCase() || "PENDING";
+    const page = parseInt((req.query.page as string) || "1", 10);
+    const pageSize = parseInt((req.query.pageSize as string) || "10", 10);
+
+    // Validate status
+    const validStatuses = ["PENDING", "APPROVED", "REJECTED"];
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({ message: "Invalid status" });
+    }
+
+    // --- Fetch all requests (could optimize further w/ Prisma filtering) ---
+    const requests: MainRequestWithRelations[] = await prisma.mainRequest.findMany({
+      include: {
+        fundTransfer: {
+          include: {
+            requestTo: 
+             {select: {name: true, position: true}},
+          }
+        },
+        approval: true,
+        requestFrom: true,
+        requestType: {
+          include: {
+            notedBy:{
+              select: {
+                id: true,
+                initial: true,
+                name: true,
+                position: true,
+              }
+            },
+            checkedBy: true,
+            checkedBy2: {
+              select: {
+                id: true,
+                initial: true,
+                name: true,
+                position: true,
+              }
+            },
+            recomApproval: {
+              select: {
+                id: true,
+                initial: true,
+                name: true,
+                position: true,
+              }
+            },
+            recomApproval2: {
+              select: {
+                id: true,
+                initial: true,
+                name: true,
+                position: true,
+              }
+            },
+            approveBy: {
+              select: {
+                id: true,
+                initial: true,
+                name: true,
+                position: true,
+              }
+            }
+          },
+        },
+        requestBy: { select: { id: true, name: true, position: true } }, 
+      },
+      orderBy: { id: "desc" },
+    });
+
+    // --- Filter user-specific requests ---
+    const filtered = requests.filter((r) =>
+      hasUserWithStatus(r, userId, status)
+    );
+
+    // --- Pagination ---
+    const total = filtered.length;
+    const start = (page - 1) * pageSize;
+    const end = start + pageSize;
+    const paginated = filtered.slice(start, end);
+
+    return res.json({
+      data: paginated,
+      status,
+      pagination: {
+        total,
+        page,
+        pageSize,
+        totalPages: Math.ceil(total / pageSize),
+      },
+    });
+  } catch (err) {
+    console.error("Error fetching requests by status:", err);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+
+
+export const actOnRequest = async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = req.user?.id;
+    if (!userId) return res.status(401).json({ message: "Unauthorized" });
+
+    const { id } = req.params;
+    const { action } = req.body; // "APPROVED" | "REJECTED"
+
+    if (!["APPROVED", "REJECTED"].includes(action)) {
+      return res.status(400).json({ message: "Invalid action" });
+    }
+
+    // Find the request and approval row
+    const request = await prisma.mainRequest.findUnique({
+      where: { id: Number(id) },
+      include: {
+        approval: true,
+        requestType: {
+          include: {
+            notedBy: true,
+            checkedBy: true,
+            checkedBy2: true,
+            recomApproval: true,
+            recomApproval2: true,
+            approveBy: true,
+          },
+        },
+      },
+    });
+
+    if (!request) {
+      return res.status(404).json({ message: "Request not found" });
+    }
+
+    const approval = request.approval[0];
+    const type = request.requestType;
+    if (!approval || !type) {
+      return res.status(400).json({ message: "Invalid request setup" });
+    }
+
+    // ✅ Figure out which field this user is responsible for
+    let updateData: any = {};
+    if (type.notedBy?.id === userId) updateData.notedBy = action;
+    if (type.checkedBy?.id === userId) updateData.checkedBy = action;
+    if (type.checkedBy2?.id === userId) updateData.checkedBy2 = action;
+    if (type.recomApproval?.id === userId) updateData.recomApproval = action;
+    if (type.recomApproval2?.id === userId) updateData.recomApproval2 = action;
+    if (type.approveBy?.id === userId) updateData.approveBy = action;
+
+    if (Object.keys(updateData).length === 0) {
+      return res.status(403).json({ message: "You are not an approver for this request" });
+    }
+
+    // ✅ Update approval row
+    await prisma.approvalTable.update({
+      where: { id: approval.id },
+      data: updateData,
+    });
+    return res.json({ message: `Request ${action} successfully` });
+  } catch (err) {
+    console.error("Error approving/rejecting request:", err);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+
+
+

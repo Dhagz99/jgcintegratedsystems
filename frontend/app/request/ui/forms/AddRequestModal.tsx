@@ -1,13 +1,14 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CheckerData, checkerSchema, RequestType, requestTypeSchema } from "../../lib/request.schema";
 import { useForm } from "react-hook-form";
-import { useAddChecker, useAddRequestType, useFetchChecker, useUpdateChecker } from "../../hooks/useRequest";
+import { useAddChecker, useAddRequestType, useFetchChecker, useFetchUserList, useUpdateChecker } from "../../hooks/useRequest";
 import { FormsInputs, FormsSelect } from "../../components/FormsInputs";
 import { Close, SaveAs } from "@mui/icons-material";
 import ButtonComponents from "../../components/Buttons";
 import { useEffect, useState } from "react";
 import { showSuccess } from "../../components/ToastAlert";
 import { CheckerWithName, Option } from "../../type/RequestType";
+import { PublicUserDTO } from "@/types/auth.type";
 
 type AddProps = {
   onClose: () => void;
@@ -22,7 +23,7 @@ export default function AddRequestModal({ onClose, selectedData }: AddProps) {
   const [isCheckedBy, setIsCheckedBy] = useState(false);
   const [isCheckedRecomApproval, setIsCheckedRecomApproval] = useState(false);
   const [isCheckedApprove, setIsCheckedApprove] = useState(false);
-
+  const {data: checker, isLoading: userLoading} = useFetchUserList();
   const {
     register,
     handleSubmit,
@@ -39,7 +40,6 @@ export default function AddRequestModal({ onClose, selectedData }: AddProps) {
 
   const { mutate: addRequest, isPending: isAdding } = useAddRequestType();
   const { mutate: editChecker, isPending: isEditing } = useUpdateChecker();
-  const { data: checker = [], isLoading } = useFetchChecker();
   
 
   useEffect(() => {
@@ -69,11 +69,14 @@ export default function AddRequestModal({ onClose, selectedData }: AddProps) {
     
   };
 
-  // Convert fetched data into options
-  const notedByOptions: Option[] = checker.map((c: CheckerWithName) => ({
+  const notedByOptions: Option[] = (checker ?? [])
+  .filter(c => c.approver) 
+  .map(c => ({
     value: c.id,
-    label: c.checkerName?.name ?? "",
+    label: c.name ?? "",
   }));
+
+  
   
   return (
     <form onSubmit={handleSubmit(onSubmit)}>

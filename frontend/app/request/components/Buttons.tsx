@@ -4,12 +4,11 @@ import { ButtonHTMLAttributes } from 'react';
 import clsx from 'clsx';
 
 type ButtonProps = {
-  type?: string,
+  type?: "button" | "submit" | "reset";
   label: string;
   variant?: 'success' | 'info' | 'danger' | 'secondary';
   size?: 'xs' | 'sm' | 'md' | 'lg';
   icon?: React.ReactNode;
-  onClick?: () => void;
 } & ButtonHTMLAttributes<HTMLButtonElement>;
 
 export default function ButtonComponents({
@@ -19,11 +18,10 @@ export default function ButtonComponents({
   size = 'md',
   icon,
   className,
-  onClick,
   ...props
 }: ButtonProps) {
   const baseStyle =
-    'inline-flex items-center justify-center rounded-md font-medium transition-colors duration-200';
+    'inline-flex items-center justify-center rounded-md font-medium transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed';
 
   const sizeStyles = {
     xs: 'px-2 py-1 text-[0.6rem]',
@@ -48,12 +46,9 @@ export default function ButtonComponents({
         variantStyles[variant],
         className
       )}
-      {...props}
-
-      onClick={onClick}
+      {...props} // includes onClick, disabled, etc.
     >
-     {icon && <span className="mr-2 text-[5px]">{icon}</span>}
-
+      {icon && <span className="mr-2">{icon}</span>}
       {label}
     </button>
   );

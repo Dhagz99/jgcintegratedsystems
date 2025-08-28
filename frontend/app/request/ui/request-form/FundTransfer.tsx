@@ -1,6 +1,6 @@
 import { AddBox, Restore, Save } from "@mui/icons-material";
 import SearchableInput from "../../components/SearchableInputs";
-import { useAddFundTransfer, useFetchBranches, useFetchChecker } from "../../hooks/useRequest";
+import { useAddFundTransfer, useFetchBranches, useFetchChecker, useFetchUserList } from "../../hooks/useRequest";
 import { FormsInputs, FormsTextArea } from "../../components/FormsInputs";
 import { Controller, useForm } from "react-hook-form";
 import z from "zod";
@@ -24,13 +24,20 @@ export default function FundTransfer({requestTypeId, requestType} : FormProps){
   
   const [formData, setFormData] = useState<CreateFundTrasnfer | null>(null);
   const [isOpenModal, setIsOpenModal] = useState(false);
-  const { data: checkers = [], isLoading: checkerLoading } = useFetchChecker();
+  const {data: checkers, isLoading: userLoading} = useFetchUserList();
   const { data: branches = [], isLoading: branchesLoading } = useFetchBranches();
   const {mutate: addFundTransfer, isPending: isAdding} = useAddFundTransfer();
-  const checkerData: Option1[] = checkers.map(c => ({
+
+
+  const checkerData: Option1[] = (checkers ?? [])
+  .filter(c => c.approver)
+  .map(c => ({
     id: c.id ?? "",      
-    name: c.checkerName?.name ?? ""
+    name:c.name ?? "",
   }));
+
+
+ 
 
   const branchData: Option1[] = branches.map(c => ({
     id: c.id ?? "",      

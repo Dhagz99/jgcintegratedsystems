@@ -30,11 +30,9 @@ export default function SubmitForm() {
     setRequestTypeId(id);
     setSelectedType(byId.get(id) ?? null); // <- store the full object here
   };
-
   if (isLoading) {
     return <div className="p-2 text-sm text-gray-600">Loading request types…</div>;
   }
-
   return (
     <div className="flex flex-col">
       <div>
@@ -56,10 +54,9 @@ export default function SubmitForm() {
         </select>
       </div>
       {/* You can pass either the id or the full object to children */}
-      {requestTypeId === 1 && (
-        <FundTransfer requestTypeId={requestTypeId} requestType={selectedType} />
-      )}
-    
+        {requestTypeId === 1 && (
+          <FundTransfer requestTypeId={requestTypeId} requestType={selectedType} />
+        )}
     </div>
   );
 }

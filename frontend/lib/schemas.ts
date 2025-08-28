@@ -15,6 +15,9 @@ export const registerSchema = z.object({
     password: z.string().min(6),
     role: RoleEnum.default("User"),
     branchId: z.coerce.number().optional(),
+    approver: z.coerce.boolean().default(false),
+    position: z.string().min(1),
+    initial: z.string().min(1),
     createdAt: z.date().optional(),
     updatedAt: z.date().optional(),
 })

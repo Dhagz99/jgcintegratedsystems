@@ -53,12 +53,12 @@ const SweetAlert = {
 
   confirmationAlert: (
     title: string = "Are you sure?",
-    text: string = "",
+    html: string = "",
     onConfirm?: () => void
   ) => {
     return Swal.fire({
       title,
-      text,
+      html,
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Yes",

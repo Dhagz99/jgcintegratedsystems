@@ -69,12 +69,12 @@ export default function RequestConfigurationModal() {
                   <tr key={rt.id} className="bg-white border-b border-gray-200 hover:bg-gray-50">
                     <td className="px-6 py-1.5">{/* actions */}</td>
                     <td className="px-6 py-1.5">{rt.requestName}</td>
-                    <td className="px-6 py-1.5">{rt.notedBy?.checkerName?.name ?? ""}</td>
-                    <td className="px-6 py-1.5">{rt.checkedBy?.checkerName?.name ?? ""}</td>
-                    <td className="px-6 py-1.5">{rt.checkedBy2?.checkerName?.name ?? ""}</td>
-                    <td className="px-6 py-1.5">{rt.recomApproval?.checkerName?.name ?? ""}</td>
-                    <td className="px-6 py-1.5">{rt.recomApproval2?.checkerName?.name ?? ""}</td>
-                    <td className="px-6 py-1.5">{rt.approveBy?.checkerName?.name ?? ""}</td>
+                    <td className="px-6 py-1.5">{rt.notedBy?.name?? ""}</td>
+                    <td className="px-6 py-1.5">{rt.checkedBy?.name ?? ""}</td>
+                    <td className="px-6 py-1.5">{rt.checkedBy2?.name ?? ""}</td>
+                    <td className="px-6 py-1.5">{rt.recomApproval?.name ?? ""}</td>
+                    <td className="px-6 py-1.5">{rt.recomApproval2?.name ?? ""}</td>
+                    <td className="px-6 py-1.5">{rt.approveBy?.name ?? ""}</td>
                   </tr>
                 ))}
           </tbody>

@@ -7,6 +7,9 @@ import { Approval, ApproverRole, FundTransfer } from "./BaseType";
     id?: string;
     name: string;
     email: string;
+    position: string;
+    initial: string;
+    approver: string;
     username: string;
     password: string;
     role: string;
@@ -41,16 +44,18 @@ export type CheckerWithName = Checker & {
     recomApproval2Id: number | null;
     approveById: number | null;
   
-    createdAt: string;   // ISO string in API
-    updateAt: string;    // <- matches your field name (no "d")
+    createdAt: string;  
+    updateAt: string;    
+
+    fundTransfer: FundTransfer | null;
   
-    // Relations (nullable if FK is null)
-    notedBy: CheckerWithName | null;
-    checkedBy: CheckerWithName | null;
-    checkedBy2: CheckerWithName | null;
-    recomApproval: CheckerWithName | null;
-    recomApproval2: CheckerWithName | null;
-    approveBy: CheckerWithName | null;
+  
+    notedBy: Users | null;
+    checkedBy: Users | null;
+    checkedBy2: Users | null;
+    recomApproval: Users | null;
+    recomApproval2: Users | null;
+    approveBy: Users | null;
   }
   
 
@@ -73,12 +78,12 @@ export type CheckerWithName = Checker & {
     updateAt: string;
   
     // relations
-    notedBy: ApproverRole | null;
-    checkedBy: ApproverRole | null;
-    checkedBy2: ApproverRole | null;
-    recomApproval: ApproverRole | null;
-    recomApproval2: ApproverRole | null;
-    approveBy: ApproverRole | null;
+    notedBy: Users | null;
+    checkedBy: Users | null;
+    checkedBy2: Users | null;
+    recomApproval: Users | null;
+    recomApproval2: Users | null;
+    approveBy: Users | null;
   };
 
   export type MainRequest = {
@@ -102,6 +107,13 @@ export type CheckerWithName = Checker & {
     };
   };
 
+
+  export type Pagination = {
+    page: number;
+    pageSize: number;
+    total: number;
+    totalPages: number;
+  }
 
   export interface RequestFrom {
     id: number;

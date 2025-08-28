@@ -3,23 +3,57 @@ import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { AuthRequest } from '../middleware/auth.middleware'
+import { registerSchema } from '../lib/request.schema'
 
 const prisma = new PrismaClient()
 const JWT_SECRET = process.env.JWT_SECRET!
 
 export const register = async (req: Request, res: Response) => {
-  const { name, email, username, password, role, branchId } = req.body
+  try {
+    // parse and coerce fields using Zod
+    const parsed = registerSchema.parse({
+      ...req.body,
+      approver: req.body.approver, // "true" | "false" → boolean
+      branchId: req.body.branchId, // "3" → number
+    });
 
-  const existing = await prisma.user.findUnique({ where: { email } })
-  if (existing) return res.status(400).json({ message: 'Email already exists' })
-    const existingUsername = await prisma.user.findUnique({ where: { username } })
-  if (existingUsername) return res.status(400).json({ message: 'Username already exists' })
-    const hashed = await bcrypt.hash(password, 10)
+    const existing = await prisma.user.findUnique({ where: { email: parsed.email } });
+    if (existing) return res.status(400).json({ message: "Email already exists" });
+
+    const existingUsername = await prisma.user.findUnique({ where: { username: parsed.username } });
+    if (existingUsername) return res.status(400).json({ message: "Username already exists" });
+
+    // File is available via Multer
+    const signatureUrl = req.file
+      ? `${process.env.APP_URL}/uploads/${req.file.filename}`
+      : null;
+
+    const hashed = await bcrypt.hash(parsed.password, 10);
+
     const user = await prisma.user.create({
-      data: {  name, email, username, password: hashed, role, branchId },
-    })
-    res.status(201).json({ message: 'Account created', user: { id: user.id, email: user.email, name: user.name } })
+      data: {
+        name: parsed.name.trim(),
+        email: parsed.email.trim(),
+        username: parsed.username.trim(),
+        password: hashed,
+        role: parsed.role,
+        branchId: parsed.branchId ?? null,
+        approver: parsed.approver,
+        position: parsed.position,
+        initial: parsed.initial,
+        signatureUrl,
+      },
+    });
+
+    res.status(201).json({
+      message: "Account created",
+      user: { id: user.id, email: user.email, name: user.name, approver: user.approver },
+    });
+  } catch (err) {
+    console.error("Register error:", err);
+    res.status(400).json({ message: "Invalid data", error: err });
   }
+};
 
 export const login = async (req: Request, res: Response) => {
   const { username, password } = req.body
@@ -41,7 +75,10 @@ export const me = async (req: AuthRequest, res: Response) => {
     if (!userId) {
       return res.status(401).json({ message: 'Unauthorized' })
     }
-    const user = await prisma.user.findUnique({ where: { id: userId } })
+    const user = await prisma.user.findUnique({ where: { id: userId },
+    include: {
+      branch: true,
+    } })
     if (!user) {
       return res.status(404).json({ message: 'User not found' })
     }
@@ -50,7 +87,9 @@ export const me = async (req: AuthRequest, res: Response) => {
       email: user.email,
       name: user.name,
       role: user.role,
-      branchId: user.branchId
+      branchId: user.branchId,
+      branchName: user.branch?.branchName,
+      signatureUrl: user.signatureUrl
     })
   }
 
@@ -78,6 +117,10 @@ export const me = async (req: AuthRequest, res: Response) => {
           username: true,
           role: true,
           branchId: true,
+          initial: true,
+          position: true,
+          approver: true,
+          signatureUrl: true,
           createdAt: true,
           updateAt: true,
           branch: true

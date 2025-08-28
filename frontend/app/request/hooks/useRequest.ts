@@ -5,6 +5,8 @@ import { Branch, CheckerData, CreateBranchInput, CreateFundTrasnfer, CreateReque
 import { CreateUser, RegisterData } from "@/lib/schemas";
 import { PublicUserDTO } from "@/types/auth.type";
 import { CheckerWithName, RequestTypeDTO } from "../type/RequestType";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import api from "@/lib/api";
 
 // Checker hooks 
   export const useAddChecker = () =>
@@ -103,13 +105,30 @@ export const useFetchRequestType = () =>
     });
 
 
-  // Users hooks 
+  // // Users hooks 
   const QUERYKEY = ["users"] as const;
+
+
+  // export const useAddUser = () => {
+  //   return useAddGlobal<CreateUser, FormData>({
+  //     mutationFn: (vars) =>
+  //     addData<CreateUser, FormData>("/register", vars),
+  //     queryKey: QUERYKEY,
+  //   });
+  // };
+
   export const useAddUser = () => {
-    return useAddGlobal<CreateUser, RegisterData>({
-      mutationFn: (vars) =>
-      addData<CreateUser, RegisterData>("/register", vars),
-      queryKey: QUERYKEY,
+    const queryClient = useQueryClient();
+    return useMutation({
+      mutationFn: async (formData: FormData) => {
+        const res = await api.post("/register", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        return res.data;
+      },
+      onSuccess: (data) => {
+        queryClient.invalidateQueries({ queryKey: ["users"] });
+      }
     });
   };
 

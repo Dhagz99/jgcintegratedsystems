@@ -1,24 +1,24 @@
 import { Router } from 'express'
 import { register, login, me, logout, listUsers } from '../controllers/auth.controller'
 import { authenticate } from '../middleware/auth.middleware' // 👈 import middleware
-import { addBranch, addChecker, addRequestType, deleteBranch, deleteChecker, fetchBranches, fetchChecker, fetchListRequestTypes, updateBranch, updateChecker } from '../controllers/request.controller'
-import { addFundTransfer, getRequestsForApprover } from '../controllers/form.controller'
+import { addBranch, addRequestType, deleteBranch, fetchBranches, fetchListRequestTypes, updateBranch } from '../controllers/request.controller'
+import { actOnRequest, addFundTransfer, getRequestsByUserStatus, getRequestsForApprover } from '../controllers/form.controller'
+import { upload } from '../middleware/upload.middleware'
 
 const router = Router()
-router.post('/register', register);
+router.post('/register', upload.single('signature'), register);
 router.post('/login', login);
 router.get('/me', authenticate, me);
 router.post('/logout', authenticate, logout);
 
 //User Route
-router.get('/users', listUsers);
-
+router.get('/users',authenticate, listUsers);
 
 // Request Router 
-router.post('/request/add-checker', authenticate, addChecker)
-router.get('/request/fetch-checker', authenticate, fetchChecker)
-router.delete('/request/checker/:id', authenticate, deleteChecker);
-router.put("/request/checker/:id",authenticate,  updateChecker); 
+// router.post('/request/add-checker', authenticate, addChecker)
+// router.get('/request/fetch-checker', authenticate, fetchChecker)
+// router.delete('/request/checker/:id', authenticate, deleteChecker);
+// router.put("/request/checker/:id",authenticate,  updateChecker); 
 
 //Branch Router
 router.post('/request/add-branch',authenticate, addBranch)
@@ -33,7 +33,9 @@ router.get('/request/list-request-type/', authenticate, fetchListRequestTypes)
 
 //Form 
 router.post('/request/add-fund-transfer/', authenticate, addFundTransfer);
-router.get('/request/get-requests-approver/', authenticate, getRequestsForApprover);
+router.get('/request/get-request-approver/', authenticate, getRequestsForApprover);
+router.get('/request/get-request-action/', authenticate, getRequestsByUserStatus);
+router.patch('/request/:id/action/', authenticate, actOnRequest);
 
 
 export default router

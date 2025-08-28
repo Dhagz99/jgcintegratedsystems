@@ -18,14 +18,13 @@ export default function RequestMainLayout({
             <Toaster position="bottom-right" reverseOrder={false} />
              <NotificationsListener user={user} />
 
-
             <div className="flex w-58 p-2.5" >
                     <div className="flex flex-col bg-white w-full px-2 rounded-lg border border-[#ECECEC]">
                         <div className="flex justify-between p-3">
                             <div className="w-6.5 h-6.5 bg-[#32B695] rounded-full flex justify-center text-white">
                                a 
                             </div>
-                            <div>
+                            <div className='hidden sm:block'>
                                 JGC Corp.
                             </div>
                         </div>

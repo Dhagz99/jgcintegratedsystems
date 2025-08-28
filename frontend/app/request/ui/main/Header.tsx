@@ -1,5 +1,5 @@
 'use client'
-import { ManageHistoryOutlined, MenuOpen, NotificationsOutlined, PersonOutline, Search } from "@mui/icons-material";
+import { ManageHistory, ManageHistoryOutlined, MenuOpen, Notifications, NotificationsOutlined, Person, PersonOutline, Search } from "@mui/icons-material";
 // import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { LogsModal, ProfileModal } from "./HeaderModal";
@@ -9,8 +9,8 @@ import SystemConfigurationModal from "./ConfigurationModal";
 export default function RequestHeader() {
         const iconStyle = { fontSize: '1.3rem' };
         const [active, setActive] = useState("");
-        const menuActive = "bg-[#CCF8DD] text-[#32B695]";
-        const menuPassive = "bg-[#F2F7F4] text-[#414342] hover:bg-[#CCF8DD] hover:text-[#32B695]";
+        const menuActive = "bg-green-100 text-green-800";
+        const menuPassive = "bg-[#F2F7F4] text-[#414342] hover:bg-gray-200 ";
         const wrapperRef = useRef<HTMLDivElement>(null);
         const [modalOpen, setModalOpen] = useState('');
         // const router = useRouter();
@@ -58,17 +58,17 @@ export default function RequestHeader() {
                         <div className={`w-9 h-9 ${active == 'logs' ? menuActive : menuPassive}  rounded-full flex justify-center items-center cursor-pointer `}
                            onClick={()=>handleSelect("logs")}
                         > 
-                                <ManageHistoryOutlined  style={iconStyle}/>
+                                <ManageHistory  style={iconStyle}/>
                         </div>
                         <div className={`w-9 h-9 ${active == 'notification' ? menuActive : menuPassive}  rounded-full flex justify-center items-center cursor-pointer `} 
                            onClick={()=>handleSelect("notification")}
                            > 
-                                <NotificationsOutlined style={iconStyle}/> 
+                                <Notifications style={iconStyle}/> 
                         </div>
                         <div className={`w-9 h-9 ${active == 'profile' ? menuActive : menuPassive} rounded-full flex justify-center items-center cursor-pointer `} 
                            onClick={()=>handleSelect("profile")}
                            > 
-                                <PersonOutline  style={iconStyle}/>
+                                <Person  style={iconStyle}/>
                         </div>
                 </div>
                 <div className="absolute right-12.5 top-0.5  w-5 h-5 bg-[#DD3232]  rounded-full flex justify-center items-center text-[0.8rem] font-semibold   text-[#ffffff]" > 

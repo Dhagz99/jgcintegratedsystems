@@ -6,6 +6,7 @@ import http from 'http';
 import { Server } from 'socket.io';
 
 import authRoutes from './routes/auth.routes'; // your existing routes
+import path from 'path';
 
 dotenv.config();
 const app = express();
@@ -19,8 +20,14 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 
+// serve uploaded images statically
+app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
+
+
 // Use routes
 app.use('/api/', authRoutes);
+
+
 
 // Initialize Socket.IO
 const io = new Server(server, {
