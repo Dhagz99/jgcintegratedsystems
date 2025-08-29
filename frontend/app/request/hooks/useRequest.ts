@@ -142,7 +142,7 @@ export const useFetchRequestType = () =>
 
     //FORMS
 
-    const FORMKEY = ['fund_transfer'] as const;
+    const FORMKEY = ['approvals'] as const;
     export const useAddFundTransfer = () => {
         return useAddGlobal<CreateFundTrasnfer, FormFundTransfer>({
           mutationFn: (vars) =>

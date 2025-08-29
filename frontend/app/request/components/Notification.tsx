@@ -37,6 +37,16 @@ export default function NotificationsListener({ user }: { user: User }) {
       }
     });
 
+       // Listen to our custom event
+      //  socket.on("request_action", (data) => {
+      //   if(user.id == data.receiverId){
+      //     console.log("📨 New request for approval:", data);
+      //     toast.success(`New request: ${data.content}`);
+      //     queryClient.invalidateQueries({ queryKey: ["approvals"] });
+      //   }
+      // });
+  
+
     socket.on("disconnect", () => {
       console.log("🔌 Disconnected");
     });

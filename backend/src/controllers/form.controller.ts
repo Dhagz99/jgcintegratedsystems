@@ -1,7 +1,8 @@
-import { Prisma, PrismaClient, Statuses } from "@prisma/client";
+import { Prisma, PrismaClient, Statuses, $Enums  } from "@prisma/client";
 import type { Response } from "express";
 import type { AuthRequest } from "../middleware/auth.middleware";
 import { findNextApprover } from "../utils/FindNextApprover";
+import { FindRequestSequence, RequestSequenceChecker } from "../utils/RequestHelper";
 
 const prisma = new PrismaClient();
 
@@ -152,6 +153,7 @@ export const getRequestsForApprover = async (req: AuthRequest, res: Response) =>
 // ✅ Build a reusable type for mainRequest with relations
 type MainRequestWithRelations = Prisma.MainRequestGetPayload<{
   include: {
+    status: true,
     fundTransfer: true;
     approval: true;
     requestFrom: true;
@@ -170,20 +172,40 @@ type MainRequestWithRelations = Prisma.MainRequestGetPayload<{
 }>;
 
 // ✅ Helper to check if user has already acted
-function hasUserWithStatus(req: MainRequestWithRelations, userId: number, status: string): boolean {
+
+const APPROVAL_FLOW = [
+  "notedBy",
+  "checkedBy",
+  "checkedBy2",
+  "recomApproval",
+  "recomApproval2",
+  "approveBy",
+] as const;
+
+type ApprovalKey = typeof APPROVAL_FLOW[number];
+
+
+function hasUserWithStatus(
+  req: MainRequestWithRelations,
+  userId: number,
+  status: string
+): boolean {
   const approval = req.approval[0];
   const type = req.requestType;
-  if (!approval || !type) return false; // no approval rows or no request type
+  console.log("approval", approval)
+  console.log("type", type);
 
-  return (
-    (type.notedBy?.id === userId && approval.notedBy === status) ||
-    (type.checkedBy?.id === userId && approval.checkedBy === status) ||
-    (type.checkedBy2?.id === userId && approval.checkedBy2 === status) ||
-    (type.recomApproval?.id === userId && approval.recomApproval === status) ||
-    (type.recomApproval2?.id === userId && approval.recomApproval2 === status) ||
-    (type.approveBy?.id === userId && approval.approveBy === status)
-  );
+  const sequenceNumber = FindRequestSequence(type, userId);
+  if(sequenceNumber === null) return false
+  
+  console.log("sequence", APPROVAL_FLOW[sequenceNumber]);
+  console.log("no sequence", sequenceNumber);
+
+  const sequenceNumber1 = RequestSequenceChecker(sequenceNumber, approval, status);
+
+  return sequenceNumber1;
 }
+
 
 
 // ✅ Controller to get requests where user has already acted (with pagination)
@@ -198,13 +220,25 @@ export const getRequestsByUserStatus = async (req: AuthRequest, res: Response) =
     const pageSize = parseInt((req.query.pageSize as string) || "10", 10);
 
     // Validate status
-    const validStatuses = ["PENDING", "APPROVED", "REJECTED"];
-    if (!validStatuses.includes(status)) {
-      return res.status(400).json({ message: "Invalid status" });
-    }
 
+    if (!Object.values($Enums.Statuses).includes(status as $Enums.Statuses)) {
+      return res.status(400).json({ message: "Invalid status" });
+    }   
     // --- Fetch all requests (could optimize further w/ Prisma filtering) ---
-    const requests: MainRequestWithRelations[] = await prisma.mainRequest.findMany({
+    const requests: MainRequestWithRelations[] = await prisma.mainRequest.findMany({ 
+      where: {
+            requestType: {
+              OR: [
+                { notedBy: { id: userId } },
+                { checkedBy: { id: userId } },
+                { checkedBy2: { id: userId } },
+                { recomApproval: { id: userId } },
+                { recomApproval2: { id: userId } },
+                { approveBy: { id: userId } },
+              ],
+            },
+          },
+      
       include: {
         fundTransfer: {
           include: {
@@ -351,6 +385,23 @@ export const actOnRequest = async (req: AuthRequest, res: Response) => {
       where: { id: approval.id },
       data: updateData,
     });
+
+
+    const io = req.app.get("io");
+    const nextApproverId = findNextApprover(request.requestType, approval); // ✅ first approval row
+    if (nextApproverId) {
+      console.log(`🔔 Emitting new_request approve to user_${nextApproverId}`);
+      io.to(`user_${nextApproverId}`).emit("new_request", {
+        receiverId: nextApproverId,
+        requestId: request.id,
+        content: request.requestType?.requestName,
+      });
+      console.log(`sending to user_${nextApproverId}`);
+    } else {
+      console.log("no sender");
+    }
+
+
     return res.json({ message: `Request ${action} successfully` });
   } catch (err) {
     console.error("Error approving/rejecting request:", err);

@@ -1,5 +1,5 @@
-import { useLogout } from "@/hooks/useAuth";
-import { Settings } from "@mui/icons-material"
+import { useFetchUser, useLogout } from "@/hooks/useAuth";
+import { Person, Settings } from "@mui/icons-material"
 
 
 export  function LogsModal() {
@@ -43,27 +43,31 @@ type ProfileProps = {
     handleClickModal: (path: string)=> void;
 }
 
-
-export const ProfileModal: React.FC<ProfileProps> = ({ handleClickModal }) => {
-        const { mutate: logout } = useLogout();
-
-    return(
-        <div className="absolute z-1 flex flex-col  justify-between bg-white min-h-75 w-75 top-14 right-3 rounded-xl shadow-[0_0_17px_0_rgba(0,0,0,0.1)]  p-3.5">
-        <div className="flex flex-col gap-1 justify-between h-full">
-        <h6 className="font-bold text-md">Profiles</h6>
-        <div className="text-xs text-gray-500 hover:bg-gray-300 cursor-pointer flex items-center gap-3 p-1.5" onClick={()=>handleClickModal('system-configuration')}>
-                <Settings /> System Configurations  
-        </div>
+        export const ProfileModal: React.FC<ProfileProps> = ({ handleClickModal }) => {
+                const { mutate: logout } = useLogout();
+                const { data: user , isLoading: userLoading } = useFetchUser();
+                return(
+                        <div className="absolute z-1 flex flex-col  justify-between bg-white min-h-75 w-75 top-14 right-3 rounded-xl shadow-[0_0_17px_0_rgba(0,0,0,0.1)]  p-3.5">
+                                <div className="flex flex-col gap-1 justify-between h-full">
+                                        <div className="flex gap-2 items-center border-b-2 border-gray-300 p-1 pb-2 cursor-pointer">
+                                                  <div className={` bg-[#F2F7F4] text-[#414342] hover:bg-gray-200  w-9 h-9  rounded-full flex justify-center items-center cursor-pointer `} > 
+                                                        <Person  className=""/>
+                                                  </div>
+                                                <h6 className="font-semibold text-sm">{user?.name}</h6>
+                                        </div>
+                                        <h6 className="font-bold text-md">Settings</h6>
+                                        <div className="text-xs text-gray-500 hover:bg-gray-300 cursor-pointer flex items-center gap-3 p-1.5" onClick={()=>handleClickModal('system-configuration')}>
+                                                <Settings /> System Configurations  
+                                        </div>
+                                </div>
+                                <div className="flex px-2 ">
+                                        <button 
+                                        onClick={() => logout()}
+                                        className="bg-[#E7E7E7] text-sm hover:bg-gray-300 cursor-pointer p-1 rounded-md w-full font-semibold">
+                                                Logout
+                                        </button>
+                                </div>
+                        </div>
                         
-        </div>
-        <div className="flex px-2 ">
-        <button 
-          onClick={() => logout()}
-        className="bg-[#E7E7E7] text-sm hover:bg-gray-300 cursor-pointer p-1 rounded-md w-full font-semibold">
-                Logout
-                </button>
-        </div>
-</div>
-            
-    )
-}
+                )
+        }

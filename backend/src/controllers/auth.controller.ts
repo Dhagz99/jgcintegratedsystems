@@ -87,6 +87,7 @@ export const me = async (req: AuthRequest, res: Response) => {
       email: user.email,
       name: user.name,
       role: user.role,
+      username: user.username,
       branchId: user.branchId,
       branchName: user.branch?.branchName,
       signatureUrl: user.signatureUrl
