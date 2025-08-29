@@ -153,6 +153,7 @@ export const getRequestsForApprover = async (req: AuthRequest, res: Response) =>
 type MainRequestWithRelations = Prisma.MainRequestGetPayload<{
   include: {
     fundTransfer: true;
+    travelOrder: true;
     approval: true;
     requestFrom: true;
     requestType: {
@@ -202,10 +203,11 @@ export const getRequestsByUserStatus = async (req: AuthRequest, res: Response) =
     if (!validStatuses.includes(status)) {
       return res.status(400).json({ message: "Invalid status" });
     }
-
+ 
     // --- Fetch all requests (could optimize further w/ Prisma filtering) ---
     const requests: MainRequestWithRelations[] = await prisma.mainRequest.findMany({
       include: {
+        travelOrder:true,
         fundTransfer: {
           include: {
             requestTo: 
@@ -359,5 +361,98 @@ export const actOnRequest = async (req: AuthRequest, res: Response) => {
 };
 
 
+
+
+
+
+export const saveTravelOrderForm = async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = toNum(req.user?.id);
+    if (!userId) return res.status(401).json({ message: "Unauthorized" });
+
+    const { name, position, departure_date,destination,current_date,purpose,items,requestTypeId,requestFromId } = req.body ?? {};
+
+    
+
+    if (!requestTypeId) {
+      return res.status(400).json({ message: "Missing requestTypeId" });
+    }
+
+    const dep = departure_date ? new Date(departure_date) : new Date();
+    const cur = current_date ? new Date(current_date) : new Date();
+    if (isNaN(dep.getTime()) || isNaN(cur.getTime())) {
+      return res.status(400).json({ message: "Invalid date format" });
+    }
+
+    const total = Array.isArray(items)
+      ? items.reduce((sum: number, it: any) => {
+          const n = parseFloat(String(it?.amount ?? "0"));
+          return sum + (Number.isFinite(n) ? n : 0);
+        }, 0)
+      : 0;
+
+    // Step 1: fetch request type approvers
+    const reqType = await prisma.requestType.findUnique({
+      where: { id: Number(requestTypeId) },
+      select: {
+        notedBy: { select: { id: true } },
+        checkedBy: { select: { id: true } },
+        checkedBy2: { select: { id: true } },
+        recomApproval: { select: { id: true } },
+        recomApproval2: { select: { id: true } },
+        approveBy: { select: { id: true } },
+      },
+    });
+
+    if (!reqType) {
+      return res.status(404).json({ message: "RequestType not found" });
+    }
+
+    // Step 2: build create data safely
+    const createData: any = {
+      requestDate: cur,
+      requestType: { connect: { id: Number(requestTypeId) } },
+      requestBy: { connect: { id: userId } },
+      remarks: "travel_order",
+      travelOrder: {
+        create: {
+          name: name || "Unknown",
+          position: position || "Unknown",
+          departure_date: dep,
+          current_date: cur,
+          destination: destination || "Unknown",
+          purpose_of_travel: purpose || "Unknown",
+          items: items || [],
+          total_amount: total,
+        },
+      },
+      approval: {
+        create: {
+          notedBy: reqType.notedBy?.id ? "PENDING" : "EMPTY",
+          checkedBy: reqType.checkedBy?.id ? "PENDING" : "EMPTY",
+          checkedBy2: reqType.checkedBy2?.id ? "PENDING" : "EMPTY",
+          recomApproval: reqType.recomApproval?.id ? "PENDING" : "EMPTY",
+          recomApproval2: reqType.recomApproval2?.id ? "PENDING" : "EMPTY",
+          approveBy: reqType.approveBy?.id ? "PENDING" : "EMPTY",
+        },
+      },
+    };
+
+
+    if (requestFromId && !isNaN(Number(requestFromId))) {
+      createData.requestFrom = { connect: { id: Number(requestFromId) } };
+    }
+
+    const created = await prisma.mainRequest.create({
+      data: createData,
+      include: { travelOrder: true, approval: true },
+    });
+
+    res.status(201).json({ message: "successfully added", created });
+  } catch (error) {
+    console.error("saveTravelOrderForm error:", error);
+    res.status(500).json({ message: "error occurred" });
+  }
+};
 
 

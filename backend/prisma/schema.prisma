@@ -162,6 +162,7 @@ model MainRequest {
   requestFrom Branch? @relation(fields: [requestFromId], references: [id], onDelete: SetNull)
 
   approval      ApprovalTable[]
+  travelOrder formTravelOrder[]
 
 
   @@map("main_request")
@@ -226,6 +227,30 @@ model RequestLogs {
   @@map("request_logs")
 
 
+}
+
+
+
+
+
+model formTravelOrder {
+    id Int @id @default(autoincrement())
+    name String? @db.VarChar(100)
+    position String? @db.VarChar(50)
+    departure_date DateTime @db.Date
+    current_date DateTime @db.Date
+    destination String? @db.VarChar(100)
+    purpose_of_travel String? @db.VarChar(100)
+    items Json?
+    total_amount Decimal? @db.Decimal(12,2)
+    createdAt  DateTime @default(now()) @db.Timestamptz(6)
+
+    mainFormId Int @map("main_form_id")
+ 
+    mainForm MainRequest @relation(fields: [mainFormId], references: [id], onDelete: Cascade)
+
+    @@index([mainFormId])
+    @@map("form_travel_order")
 }
 
 

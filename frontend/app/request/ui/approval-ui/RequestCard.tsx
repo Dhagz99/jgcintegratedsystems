@@ -23,7 +23,10 @@ export default function RequestCard( {requests, status ="PENDING"} : DataProps){
       const handleViewRequest = (req: MainRequest) => {
           setSelectedRequest(req);
           setViewRequest(true);
+          console.log("req Dta ", req);
       }
+
+
       const closeModal = () => {
           setViewRequest(false);
       }
@@ -81,10 +84,8 @@ export default function RequestCard( {requests, status ="PENDING"} : DataProps){
         </p>
       ) : (
         requests.map((req: MainRequest) => (
-          <div
-            key={req.id}
-            className="flex flex-col justify-between bg-white max-h-70 min-h-50 py-2 rounded-xl shadow-md"
-          >
+          <div key={req.id}
+            className="flex flex-col justify-between bg-white max-h-70 min-h-50 py-2 rounded-xl shadow-md">
             <div className="flex flex-col pb-1">
               <div className="border-b-3 pb-2 border-[#f2f7f4]">
                 <h3 className="text-center text-md font-bold ">
@@ -143,6 +144,11 @@ export default function RequestCard( {requests, status ="PENDING"} : DataProps){
         ))
       )}
           {viewRequest &&(
+            <RequestModal size="lg" >
+                 <ViewFundTransferAction mainRequest = {selectedRequest} onClose={closeModal} />
+            </RequestModal>
+          )}
+            {viewRequest &&(
             <RequestModal size="lg" >
                  <ViewFundTransferAction mainRequest = {selectedRequest} onClose={closeModal} />
             </RequestModal>

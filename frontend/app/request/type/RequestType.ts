@@ -56,7 +56,8 @@ export type CheckerWithName = Checker & {
     recomApproval: Users | null;
     recomApproval2: Users | null;
     approveBy: Users | null;
-  }
+    
+}
   
 
 
@@ -126,7 +127,7 @@ export type CheckerWithName = Checker & {
     companyName: string;
     createdAt: string;
     updateAt: string;
-  }
+}
 
   export interface ApprovalResponse {
     data: MainRequest[];

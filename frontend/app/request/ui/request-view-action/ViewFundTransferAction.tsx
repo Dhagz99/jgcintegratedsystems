@@ -15,7 +15,7 @@ type FormProps = {
 }
 
 export default function ViewFundTransferAction ({requestType, formData, onClose, mainRequest} : FormProps){
-    console.log(mainRequest)
+    console.log('mainreq',mainRequest)
     const { data: branches = [] } = useFetchBranches();
     const {data: checkers, isLoading: checkerLoading} = useFetchUserList();
     const { data: user , isLoading: userLoading } = useFetchUser();
@@ -118,7 +118,7 @@ export default function ViewFundTransferAction ({requestType, formData, onClose,
                                         {mainRequest?.requestType.approveBy?.name ?? ''}
                                     </p>
                                     <p className="font-bold">
-                                    {mainRequest?.requestType.approveBy?.position ?? ''}
+                                        {mainRequest?.requestType.approveBy?.position ?? ''}
                                     </p>
                                 </div>
                             </div>

@@ -2,7 +2,7 @@ import { Router } from 'express'
 import { register, login, me, logout, listUsers } from '../controllers/auth.controller'
 import { authenticate } from '../middleware/auth.middleware' // 👈 import middleware
 import { addBranch, addRequestType, deleteBranch, fetchBranches, fetchListRequestTypes, updateBranch } from '../controllers/request.controller'
-import { actOnRequest, addFundTransfer, getRequestsByUserStatus, getRequestsForApprover } from '../controllers/form.controller'
+import { actOnRequest, addFundTransfer, getRequestsByUserStatus, getRequestsForApprover,saveTravelOrderForm } from '../controllers/form.controller'
 import { upload } from '../middleware/upload.middleware'
 
 const router = Router()
@@ -36,6 +36,6 @@ router.post('/request/add-fund-transfer/', authenticate, addFundTransfer);
 router.get('/request/get-request-approver/', authenticate, getRequestsForApprover);
 router.get('/request/get-request-action/', authenticate, getRequestsByUserStatus);
 router.patch('/request/:id/action/', authenticate, actOnRequest);
-
+router.post('/add-travel-form',authenticate,saveTravelOrderForm);
 
 export default router

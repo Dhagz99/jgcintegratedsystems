@@ -1,0 +1,122 @@
+
+import { TravelOrderPaperProps } from "../../type/FormType";
+import SweetAlert from "../../components/Swal";
+import { formatLongDate } from "@/app/utils/DateFormatter";
+import { FormPropsTravelOrder } from "../../type/FormType";
+
+
+
+  export default function ViewTravelOrder({requestType,formData,onClose,onReset}: FormPropsTravelOrder) {
+    if (!formData) return null;
+
+    const {
+        name,
+        position,
+        departure_date,
+        current_date,
+        purpose,
+        destination,
+        items,
+        onSubmit,
+        submitting,
+        branchName,
+        address,
+      } = formData;
+    
+
+    const totalAmount = items.reduce((sum, entry) => {
+        const num = parseFloat(entry.amount);
+        return sum + (isNaN(num) ? 0 : num);
+      }, 0);
+
+      
+      const handleConfirmSubmit = () => {
+        SweetAlert.confirmationAlert(
+          "Confirm Save",
+          `Are you sure you want to submit this with E signature?`,
+          () => {
+            onSubmit?.(); 
+          }
+        );
+      };
+
+
+    return (
+
+        <div className="py-1 px-2 max-h-[70vh] overflow-y-auto">
+        <div className="grid grid-cols-12 grid-rows-[repeat(17,minmax(0,2rem))] gap-y-1">
+      
+          <div className="col-start-5 col-end-9 text-center font-black text-xl sm:text-lg">
+            <h1>
+            {branchName} LENDING CORPORATION<br></br> {address}
+            </h1>
+          </div>
+          
+          <div className="row-start-[3] col-start-9 col-span-3 text-sm sm:text-base">
+            <span className="font-bold">DATE: </span>{formatLongDate(current_date)}
+          </div>
+      
+          <div className="row-start-[4] col-start-5 col-end-9">
+            <h5 className="text-center font-black text-xl underline sm:text-lg">TRAVEL ORDER</h5>
+          </div>
+      
+          <div className="row-start-[6] row-span-5 col-start-4 col-span-2 text-sm sm:text-base">
+            <div className="grid gap-y-2 font-semibold">
+              <h2>NAME:</h2>
+              <h2>POSITION/DESIGNATION</h2>
+              <h2>DEPARTURE DATE:</h2>
+              <h2>DESTINATION:</h2>
+              <h2>PURPOSE OF TRAVEL:</h2>
+            </div>
+          </div>
+      
+          <div className="row-start-[6] row-span-5 col-start-7 col-span-7 text-sm sm:text-base">
+            <div className="grid gap-y-2">
+              <h2>{name}</h2>
+              <h2>{position}</h2>
+              <h2>{formatLongDate(departure_date)}</h2>
+              <h2>{destination}</h2>
+              <h2>{purpose}</h2>
+            </div>
+          </div> 
+      
+          <div className="row-start-[11] row-span-2 col-start-4 col-span-2">
+            <h2 className="underline font-bold">ADD'L BUDGET</h2>
+          </div>
+      
+          <div className="row-start-[12] row-span-3 col-start-4 col-span-5 font-bold">
+                {items.map((entry, i) => (
+                <div key={i} className="flex justify-between gap-x-4">
+                    <span className="break-words">{entry.budget}</span> 
+                    <span className="whitespace-nowrap">{entry.amount}</span>
+                </div>
+                ))}
+        
+        
+            <div className="flex justify-between mt-4">
+                <span>TOTAL</span> 
+                <span className="whitespace-nowrap">{totalAmount.toFixed(2)}</span>
+            </div>
+          </div>
+
+       
+
+
+      
+          <div className="row-start-[16] col-start-12">
+            <button
+              onClick={handleConfirmSubmit}
+              disabled={submitting}
+              className="bg-green-800 hover:bg-green-950 text-white py-1 px-4 rounded disabled:opacity-60">
+              {submitting ? "Saving..." : "Submit"}
+            </button>
+          </div>
+      
+        </div>
+      </div>
+      
+
+
+    );
+  }
+  

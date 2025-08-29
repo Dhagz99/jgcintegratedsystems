@@ -89,9 +89,10 @@ export const me = async (req: AuthRequest, res: Response) => {
       role: user.role,
       branchId: user.branchId,
       branchName: user.branch?.branchName,
-      signatureUrl: user.signatureUrl
+      signatureUrl: user.signatureUrl,
+      position:user.position,
     })
-  }
+}
 
 
   export const logout = (req: Request, res: Response) => {

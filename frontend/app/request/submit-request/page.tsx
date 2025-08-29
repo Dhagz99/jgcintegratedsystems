@@ -5,7 +5,7 @@ import FundTransfer from '../ui/request-form/FundTransfer';
 import ChangeFund from '../ui/request-form/ChangeFund';
 import { useFetchRequestType } from '../hooks/useRequest';
 import { RequestTypeDTO } from '../type/RequestType';
-;
+import TravelOrder from '../ui/request-form/TravelOrder';
 
 export default function SubmitForm() {
   const [requestTypeId, setRequestTypeId] = useState<number | null>(null);
@@ -28,7 +28,7 @@ export default function SubmitForm() {
     }
     const id = Number(v);
     setRequestTypeId(id);
-    setSelectedType(byId.get(id) ?? null); // <- store the full object here
+    setSelectedType(byId.get(id) ?? null);
   };
   if (isLoading) {
     return <div className="p-2 text-sm text-gray-600">Loading request types…</div>;
@@ -41,10 +41,9 @@ export default function SubmitForm() {
 
       <div className="my-1">
         <select
-          value={requestTypeId ?? ''} // show placeholder when null
+          value={requestTypeId ?? ''} 
           className="bg-white border border-[#ECECEC] rounded-sm text-xs p-2"
-          onChange={handleChange}
-        >
+          onChange={handleChange}>
           <option value="">Select type…</option>
           {requestData?.map((rt: RequestTypeDTO) => (
             <option key={rt.id} value={rt.id}>
@@ -53,10 +52,18 @@ export default function SubmitForm() {
           ))}
         </select>
       </div>
-      {/* You can pass either the id or the full object to children */}
+
         {requestTypeId === 1 && (
+            <TravelOrder requestTypeId={requestTypeId} requestType={selectedType} />
+          )}
+
+
+        {requestTypeId === 2 && (
           <FundTransfer requestTypeId={requestTypeId} requestType={selectedType} />
         )}
+
+
+        
     </div>
   );
 }
