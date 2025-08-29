@@ -1,4 +1,5 @@
 import { RequestTypeDTO } from "./RequestType";
+import { MainRequest } from "./RequestType";
 
 export type FormProps = {
   requestTypeId: number; 
@@ -12,7 +13,7 @@ export type TravelOrderPaperProps = {
     position: string;
     departure_date: string;
     current_date: string;
-    purpose: string;
+    purpose_of_travel: string;
     destination:string;
     items: Entry[];
     onSubmit?: () => void;       
@@ -22,6 +23,8 @@ export type TravelOrderPaperProps = {
     branchName?: string;
     address?: string;
     requestedBy?:string;
+    requestedPosition?: string;
+    total_amount?:number;
 };
 
 
@@ -52,6 +55,10 @@ export type AddProposedBudgetPayload = {
     form_type?: string;
     added_by?: string;
     requestFromId: number; 
+    branchName?: string;
+    monthOf?: string;
+    requestedBy?:string;
+    requestedPosition?: string;
   };
 
 
@@ -97,6 +104,9 @@ export interface TransmittalItem {
 export interface TransmittalProps{
     formData: TransmittalData;
     items: TransmittalItem[];
+    requestType?: RequestTypeDTO | null;
+    onClose?: () => void;
+    onReset?: () => void;
 }
 
 
@@ -104,7 +114,22 @@ export interface TransmittalProps{
 export type FormPropsTravelOrder = {
     requestType?: RequestTypeDTO | null;
     formData?: TravelOrderPaperProps | null;
+    mainRequest?: MainRequest | null;
     onClose?: () => void;
     onReset?: () => void;
-  };
+    
+};
   
+
+  
+
+export type FormPropsProposedBudget = {
+  requestType?: RequestTypeDTO | null;
+  formData?: AddProposedBudgetPayload | null; 
+  mainRequest?: MainRequest | null;
+  onClose?: () => void;
+  onReset?: () => void;
+  onSuccess?: () => void;
+};
+
+

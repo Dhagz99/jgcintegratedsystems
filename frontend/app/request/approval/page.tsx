@@ -24,8 +24,8 @@ export default function RequestApproval() {
   // Unwrap safely once we know data exists
   const requests: MainRequest[] = data.data ?? [];
   const pagination = data.pagination;
-  console.log("requests:", requests);
-  console.log("pagination:", pagination);
+  // console.log("requests:", requests);
+  // console.log("pagination:", pagination);
 
   return (
     <div className="flex flex-col">
@@ -68,8 +68,7 @@ export default function RequestApproval() {
         <button
           disabled={page === 1}
           onClick={() => setPage((p) => p - 1)}
-          className="px-3 py-1 border rounded disabled:opacity-50"
-        >
+          className="px-3 py-1 border rounded disabled:opacity-50">
           Prev
         </button>
         <span>
@@ -80,8 +79,7 @@ export default function RequestApproval() {
         <button
           disabled={page >= pagination.totalPages}
           onClick={() => setPage((p) => p + 1)}
-          className="px-3 py-1 border rounded disabled:opacity-50"
-        >
+          className="px-3 py-1 border rounded disabled:opacity-50">
           Next
         </button>
       </div>

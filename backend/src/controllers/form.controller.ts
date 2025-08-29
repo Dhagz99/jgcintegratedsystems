@@ -456,3 +456,110 @@ export const saveTravelOrderForm = async (req: AuthRequest, res: Response) => {
 };
 
 
+
+
+
+
+
+
+
+
+
+
+
+export const saveProposeBudgetForm = async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = toNum(req.user?.id);
+    if (!userId) return res.status(401).json({ message: "Unauthorized" });
+
+    const normalizeDecimal = (val: any) =>
+      val === "" || val === undefined ? null : val;
+
+    const {items, requestTypeId: rootTypeId, requestFromId } = req.body ?? {};
+
+
+    const requestTypeId = rootTypeId ?? items?.[0]?.requestTypeId;
+
+    if (!requestTypeId) {
+      return res.status(400).json({ message: "Missing requestTypeId" });
+    }
+
+   
+    const incomingItems: any[] = Array.isArray(items)
+      ? items
+      : req.body && (req.body.description || req.body.expense_type || req.body.month_of)
+      ? [req.body]
+      : [];
+
+    if (incomingItems.length === 0) {
+      return res.status(400).json({
+        message: "items (array) is required or send a single item body",
+      });
+    }
+
+    
+    const reqType = await prisma.requestType.findUnique({
+      where: { id: Number(requestTypeId) },
+      select: {
+        notedBy: { select: { id: true } },
+        checkedBy: { select: { id: true } },
+        checkedBy2: { select: { id: true } },
+        recomApproval: { select: { id: true } },
+        recomApproval2: { select: { id: true } },
+        approveBy: { select: { id: true } },
+      },
+    });
+
+    if (!reqType) {
+      return res.status(404).json({ message: "RequestType not found" });
+    }
+
+
+    const createData: any = {
+      requestDate: new Date(),
+      requestType: { connect: { id: Number(requestTypeId) } },
+      requestBy: { connect: { id: userId } },
+      remarks: "proposed_budget",
+      approval: {
+        create: {
+          notedBy: reqType.notedBy?.id ? "PENDING" : "EMPTY",
+          checkedBy: reqType.checkedBy?.id ? "PENDING" : "EMPTY",
+          checkedBy2: reqType.checkedBy2?.id ? "PENDING" : "EMPTY",
+          recomApproval: reqType.recomApproval?.id ? "PENDING" : "EMPTY",
+          recomApproval2: reqType.recomApproval2?.id ? "PENDING" : "EMPTY",
+          approveBy: reqType.approveBy?.id ? "PENDING" : "EMPTY",
+        },
+      },
+      proposedBudget: {
+        create: incomingItems.map((it) => ({
+          description: it?.description ?? null,
+          budget: normalizeDecimal(it?.budget),
+          total_expenses: normalizeDecimal(it?.total_expenses),
+          variance: normalizeDecimal(it?.variance),
+          proposed_budget: normalizeDecimal(it?.proposed_budget),
+          remarks: it?.remarks ?? null,
+          expense_type: it?.expense_type ?? null,
+          month_of: it?.month_of ?? null,
+        })),
+      },
+    };
+
+
+    if (requestFromId && !isNaN(Number(requestFromId))) {
+      createData.requestFrom = { connect: { id: Number(requestFromId) } };
+    }
+
+
+    const created = await prisma.mainRequest.create({
+      data: createData,
+      include: { proposedBudget: true, approval: true },
+    });
+
+    res.status(201).json({ message: "successfully added", created });
+  } catch (err) {
+    console.error("saveProposeBudgetForm error:", err);
+    res.status(500).json({ message: "error occurred" });
+  }
+
+};
+

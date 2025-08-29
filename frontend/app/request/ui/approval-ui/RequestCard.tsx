@@ -9,6 +9,7 @@ import { useApproveRequest } from "../../hooks/useApproval";
 import { showError, showSuccess } from "../../components/ToastAlert";
 import SweetAlert from "../../components/Swal";
 import ViewFundTransferAction from "../request-view-action/ViewFundTransferAction";
+import { ViewApprovalTravelOrder } from "../request-view/ViewTravelOrder";
 
 type DataProps = {
     requests: MainRequest[];
@@ -19,6 +20,8 @@ export default function RequestCard( {requests, status ="PENDING"} : DataProps){
       const [viewRequest, setViewRequest] = useState(false);
       const [selectedRequest, setSelectedRequest] = useState<MainRequest | null>(null);
       const approveMutation = useApproveRequest();
+
+      console.log("selectedRequest request",selectedRequest);
 
       const handleViewRequest = (req: MainRequest) => {
           setSelectedRequest(req);
@@ -143,14 +146,14 @@ export default function RequestCard( {requests, status ="PENDING"} : DataProps){
           </div>
         ))
       )}
-          {viewRequest &&(
+          {(viewRequest && selectedRequest?.requestTypeId === 2) &&(
             <RequestModal size="lg" >
                  <ViewFundTransferAction mainRequest = {selectedRequest} onClose={closeModal} />
             </RequestModal>
           )}
-            {viewRequest &&(
-            <RequestModal size="lg" >
-                 <ViewFundTransferAction mainRequest = {selectedRequest} onClose={closeModal} />
+            {(viewRequest && selectedRequest?.requestTypeId === 1) &&(
+            <RequestModal size="xl" title="Travel Order Details" onClose={closeModal}>
+                 <ViewApprovalTravelOrder mainRequest = {selectedRequest} onClose={closeModal} />
             </RequestModal>
           )}
       </div>

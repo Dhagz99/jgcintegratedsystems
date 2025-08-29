@@ -34,4 +34,5 @@ export interface  PublicUserDTO {
   updateAt: string;  // ISO
   branch: BranchDTO | null;
   signatureUrl: string;
+  branchName?: string;
 }

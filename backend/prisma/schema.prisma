@@ -162,7 +162,8 @@ model MainRequest {
   requestFrom Branch? @relation(fields: [requestFromId], references: [id], onDelete: SetNull)
 
   approval      ApprovalTable[]
-  travelOrder formTravelOrder[]
+  travelOrder  formTravelOrder? @relation("formTravelOrder1")
+  proposedBudget formProposedBudget[]
 
 
   @@map("main_request")
@@ -245,12 +246,35 @@ model formTravelOrder {
     total_amount Decimal? @db.Decimal(12,2)
     createdAt  DateTime @default(now()) @db.Timestamptz(6)
 
-    mainFormId Int @map("main_form_id")
- 
-    mainForm MainRequest @relation(fields: [mainFormId], references: [id], onDelete: Cascade)
+    mainFormId Int @unique @map("main_form_id")
+
+    mainForm MainRequest? @relation("formTravelOrder1", fields: [mainFormId], references: [id], onDelete: Cascade)
+
+    
 
     @@index([mainFormId])
     @@map("form_travel_order")
+}
+
+
+
+model formProposedBudget {
+  id              Int      @id @default(autoincrement())
+  description     String?  @db.VarChar(200)
+  budget          Decimal? @db.Decimal(10,2)
+  total_expenses  Decimal? @db.Decimal(10,2)
+  variance        Decimal? @db.Decimal(10,2)
+  proposed_budget Decimal? @db.Decimal(10,2)
+  remarks         String?  @db.VarChar(200)
+  expense_type    String?  @db.VarChar(50)
+  month_of        String?  @db.VarChar(50)
+  createdAt  DateTime @default(now()) @db.Timestamptz(6)
+
+  mainFormId Int @map("main_form_id")
+  mainForm MainRequest @relation(fields: [mainFormId], references: [id], onDelete: Cascade)
+
+  @@index([mainFormId])
+  @@map("form_proposed_budget")
 }
 
 

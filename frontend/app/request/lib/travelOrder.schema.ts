@@ -14,7 +14,7 @@ export const travelOrderSchema = z.object({
   departure_date: z.string().min(1, "Departure date is required"), 
   destination: z.string().min(1, "Destination is required"),
   current_date: z.string().min(1, "Current date is required"),
-  purpose: z.string().min(1, "Purpose is required"),
+  purpose_of_travel: z.string().min(1, "Purpose is required"),
   requestFromId: z.number().min(1, "Purpose is required"),
   items: z.array(entrySchema).min(1, "At least one entry is required"),
   requestTypeId: z.number().optional(), 

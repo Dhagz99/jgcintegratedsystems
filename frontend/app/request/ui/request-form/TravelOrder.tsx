@@ -29,7 +29,7 @@ export default function TravelOrder({requestTypeId, requestType}:FormProps) {
       departure_date: "",
       destination: "",
       current_date: "",
-      purpose: "",
+      purpose_of_travel: "",
       requestFromId: 0,
       items: [],
       requestTypeId: requestTypeId,
@@ -45,7 +45,7 @@ export default function TravelOrder({requestTypeId, requestType}:FormProps) {
         departure_date: "",
         destination: "",
         current_date: "",
-        purpose: "",
+        purpose_of_travel: "",
         requestFromId: user.branchId,  
         items: [],
         requestTypeId: requestTypeId,
@@ -140,8 +140,8 @@ const handleAddAmount = (index: number, value: string) => {
 
         <div className="flex flex-col">
           <label className="mr-2 mb-2 font-semibold">Purpose of Travel:</label>
-          <input type="text" className="bg-gray-50 border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500" placeholder="Enter purpose..." {...register("purpose")}/>
-          {errors.purpose && <p className="text-sm text-red-500">{errors.purpose.message}</p>}
+          <input type="text" className="bg-gray-50 border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500" placeholder="Enter purpose..." {...register("purpose_of_travel")}/>
+          {errors.purpose_of_travel && <p className="text-sm text-red-500">{errors.purpose_of_travel.message}</p>}
         </div>
 
         <div className="flex flex-col">

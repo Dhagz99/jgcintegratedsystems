@@ -15,7 +15,7 @@ type FormProps = {
 }
 
 export default function ViewFundTransferAction ({requestType, formData, onClose, mainRequest} : FormProps){
-    console.log('mainreq',mainRequest)
+
     const { data: branches = [] } = useFetchBranches();
     const {data: checkers, isLoading: checkerLoading} = useFetchUserList();
     const { data: user , isLoading: userLoading } = useFetchUser();

@@ -1,4 +1,5 @@
 import { Approval, ApproverRole, FundTransfer } from "./BaseType";
+import { TravelOrderPaperProps } from "./FormType";
 
  export type Option = { value: number | string; label: string };
 
@@ -99,12 +100,14 @@ export type CheckerWithName = Checker & {
     updateAt: string;
   
     fundTransfer: FundTransfer;
+    travelOrder:TravelOrderPaperProps;
     approval: Approval[];
     requestFrom: RequestFrom;
     requestType: RequestType;
     requestBy: {
       id: number;
       name: string;
+      position?:string;
     };
   };
 

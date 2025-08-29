@@ -6,7 +6,7 @@ import { FormPropsTravelOrder } from "../../type/FormType";
 
 
 
-  export default function ViewTravelOrder({requestType,formData,onClose,onReset}: FormPropsTravelOrder) {
+export default function ViewTravelOrder({requestType,formData,onClose,onReset}: FormPropsTravelOrder) {
     if (!formData) return null;
 
     const {
@@ -14,7 +14,7 @@ import { FormPropsTravelOrder } from "../../type/FormType";
         position,
         departure_date,
         current_date,
-        purpose,
+        purpose_of_travel,
         destination,
         items,
         onSubmit,
@@ -83,7 +83,7 @@ import { FormPropsTravelOrder } from "../../type/FormType";
                 <h2>{position}</h2>
                 <h2>{formatLongDate(departure_date)}</h2>
                 <h2>{destination}</h2>
-                <h2>{purpose}</h2>
+                <h2>{purpose_of_travel}</h2>
               </div>
             </div>
       
@@ -152,3 +152,131 @@ import { FormPropsTravelOrder } from "../../type/FormType";
       );
   }
   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+export function ViewApprovalTravelOrder({mainRequest, formData, onClose,}:FormPropsTravelOrder){
+
+
+    return(
+      <div className="py-1 px-2 max-h-[70vh] overflow-y-auto">
+      <div className="flex flex-col p-10">
+        {/* Header */}
+        <div className="font-black text-xl sm:text-lg text-center">
+          <h1>
+            {mainRequest?.requestFrom.branchName} LENDING CORPORATION<br /> {mainRequest?.requestFrom.address}
+          </h1>
+        </div>
+    
+        <div className="self-end pr-4 sm:pr-6 md:pr-20 mt-4 sm:mt-6">
+          <span className="font-bold">DATE: </span>
+          {formatLongDate(mainRequest?.travelOrder.current_date)}
+        </div>
+    
+        <div className="mt-4 sm:mt-6">
+          <h5 className="text-center font-black text-xl sm:text-lg underline">
+            TRAVEL ORDER
+          </h5>
+        </div>
+    
+        {/* Wrapper that controls alignment */}
+        <div className="max-w-3xl w-full mx-auto mt-6 px-20">
+          {/* Two Columns */}
+          <div className="flex flex-col sm:flex-row gap-x-4">
+            {/* Left column */}
+            <div className="font-bold space-y-2 w-full sm:w-56">
+              <h2>NAME:</h2>
+              <h2>POSITION/DESIGNATION</h2>
+              <h2>DEPARTURE DATE:</h2>
+              <h2>DESTINATION:</h2>
+              <h2>PURPOSE OF TRAVEL:</h2>
+            </div>
+    
+            {/* Right column */}
+            <div className="font-semibold space-y-2 text-left flex-1">
+              <h2>{mainRequest?.travelOrder.name}</h2>
+              <h2>{mainRequest?.travelOrder.position}</h2>
+              <h2>{formatLongDate(mainRequest?.travelOrder.departure_date)}</h2>
+              <h2>{mainRequest?.travelOrder.destination}</h2>
+              <h2>{mainRequest?.travelOrder.purpose_of_travel}</h2>
+            </div>
+          </div>
+    
+        
+          <div className="font-semibold mt-6">
+            <h2 className="underline font-extrabold mb-4">ADD'L BUDGET</h2>
+            {mainRequest?.travelOrder?.items?.map((entry, i) => (
+              <div key={i} className="flex justify-between">
+                <span className="break-words">{entry.budget}</span>
+                <span className="whitespace-nowrap">{entry.amount}</span>
+              </div>
+            ))}
+            <div className="flex justify-between mt-4 font-extrabold">
+              <span>TOTAL</span>
+              <span className="whitespace-nowrap">{mainRequest?.travelOrder.total_amount}</span>
+            </div>
+          </div>
+
+
+
+
+          <div className="mt-15 grid grid-cols-1 gap-x-4 sm:grid-cols-2">
+            <div>
+              <h2 className="font-bold mb-2">Prepared by:</h2>
+              <h2 className="font-bold">{mainRequest?.requestBy.name.toLocaleUpperCase()}</h2>
+              <h2 className="font-semibold">{mainRequest?.requestBy.position}</h2>
+
+              <h2 className="font-bold mt-4 mb-2">Recommending Approval:</h2>
+              <h2 className="font-bold">{mainRequest?.requestType.recomApproval?.name.toLocaleUpperCase()}</h2>
+              <h2 className="font-semibold">{mainRequest?.requestType.recomApproval?.position}</h2>
+
+              <h2 className="font-bold mt-4 mb-2">Approved:</h2>
+              <h2 className="font-bold">{mainRequest?.requestType.approveBy?.name.toLocaleUpperCase()}</h2>
+              <h2 className="font-semibold">{mainRequest?.requestType.approveBy?.position}</h2>
+          </div>
+
+            <div>
+            <h2 className="font-bold mb-2">Checked by:</h2>
+            <h2 className="font-bold">{mainRequest?.requestType.checkedBy?.name.toLocaleUpperCase()}</h2>
+            <h2 className="font-semibold">{mainRequest?.requestType.checkedBy?.position}</h2>
+
+            <h2 className="font-bold mt-4">{mainRequest?.requestType.checkedBy2?.name.toLocaleUpperCase()}</h2>
+            <h2 className="font-semibold">{mainRequest?.requestType.checkedBy2?.position}</h2>
+            </div>
+          
+
+        </div> 
+
+
+        </div>
+
+   
+
+
+
+      </div>
+    </div>
+    );
+
+  }

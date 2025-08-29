@@ -6,6 +6,8 @@ import ChangeFund from '../ui/request-form/ChangeFund';
 import { useFetchRequestType } from '../hooks/useRequest';
 import { RequestTypeDTO } from '../type/RequestType';
 import TravelOrder from '../ui/request-form/TravelOrder';
+import ProposedBudget from '../ui/request-form/ProposedBudget';
+import TransmittalMemoPage from '../ui/request-form/TransmittalMemo';
 
 export default function SubmitForm() {
   const [requestTypeId, setRequestTypeId] = useState<number | null>(null);
@@ -61,6 +63,15 @@ export default function SubmitForm() {
         {requestTypeId === 2 && (
           <FundTransfer requestTypeId={requestTypeId} requestType={selectedType} />
         )}
+
+        {requestTypeId === 3 && (
+          <ProposedBudget requestTypeId={requestTypeId} requestType={selectedType} />
+        )}
+
+        {requestTypeId === 4 &&(
+          <TransmittalMemoPage requestTypeId={requestTypeId} requestType={selectedType}/>
+        )}
+
 
 
         

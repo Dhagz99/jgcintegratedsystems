@@ -40,19 +40,49 @@ export function parseISODateOnly(iso: string): Date | null {
 /**
  * Format to "August 18, 2025".
  */
+// export function formatLongDate(
+//   input: string | Date | null | undefined,
+//   locale = "en-US"
+// ): string {
+//   if (!input) return "";
+//   const date =
+//     typeof input === "string" ? parseISODateOnly(input) : input instanceof Date ? input : null;
+//   if (!date || isNaN(date.getTime())) return "";
+
+//   return new Intl.DateTimeFormat(locale, {
+//     year: "numeric",
+//     month: "long",
+//     day: "numeric",
+//     timeZone: "UTC", // keep calendar day stable
+//   }).format(date);
+// }
+
+
 export function formatLongDate(
   input: string | Date | null | undefined,
   locale = "en-US"
 ): string {
   if (!input) return "";
-  const date =
-    typeof input === "string" ? parseISODateOnly(input) : input instanceof Date ? input : null;
+
+  let date: Date | null = null;
+
+  if (typeof input === "string") {
+   
+    if (/^\d{4}-\d{2}-\d{2}$/.test(input)) {
+      date = parseISODateOnly(input);
+    } else {
+      date = new Date(input); 
+    }
+  } else if (input instanceof Date) {
+    date = input;
+  }
+
   if (!date || isNaN(date.getTime())) return "";
 
   return new Intl.DateTimeFormat(locale, {
     year: "numeric",
     month: "long",
     day: "numeric",
-    timeZone: "UTC", // keep calendar day stable
+    timeZone: "UTC",
   }).format(date);
 }
