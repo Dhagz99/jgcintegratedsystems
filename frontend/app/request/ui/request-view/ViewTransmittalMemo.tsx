@@ -1,9 +1,12 @@
 
 import { TransmittalProps } from "../../type/FormType";
 import { formatLongDate } from "@/app/utils/DateFormatter";
-
+import { useFetchUser } from "@/hooks/useAuth";
 
 export default function ViewTransmittalMemo({ formData, items,requestType }: TransmittalProps) {
+     const { data: user , isLoading: userLoading } = useFetchUser();
+
+
     return (
       <div className="max-h-[70vh] overflow-y-auto px-20 py-8">
         {/* HEADER */}
@@ -55,6 +58,17 @@ export default function ViewTransmittalMemo({ formData, items,requestType }: Tra
             <h2>{formData.note}</h2>
           </div>
         )}
+
+
+        <div className="px-20 mt-15">
+            <div>
+                <h2 className="font-extrabold mb-2">PREPARED BY:</h2>
+                <p className="font-bold">{user?.name}</p>
+                <p className="font-bold">{user?.position}-{user?.branchName}</p>
+            </div>
+        </div>
+
+
       </div>
     );
   }

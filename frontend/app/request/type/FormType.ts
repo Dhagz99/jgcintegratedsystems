@@ -95,6 +95,7 @@ export interface TransmittalData{
     description:string;
     note?:string;
     items:string;
+    requestToId?:number;
 }   
 
 export interface TransmittalItem {

@@ -2,6 +2,7 @@ import { Prisma, PrismaClient, Statuses } from "@prisma/client";
 import type { Response } from "express";
 import type { AuthRequest } from "../middleware/auth.middleware";
 import { findNextApprover } from "../utils/FindNextApprover";
+import { FindRequestSequence, RequestSequenceChecker } from "../utils/RequestHelper";
 
 const prisma = new PrismaClient();
 
@@ -171,21 +172,25 @@ type MainRequestWithRelations = Prisma.MainRequestGetPayload<{
 }>;
 
 // ✅ Helper to check if user has already acted
-function hasUserWithStatus(req: MainRequestWithRelations, userId: number, status: string): boolean {
+function hasUserWithStatus(
+  req: MainRequestWithRelations,
+  userId: number,
+  status: string
+): boolean {
   const approval = req.approval[0];
   const type = req.requestType;
-  if (!approval || !type) return false; // no approval rows or no request type
+  console.log("approval", approval)
+  console.log("type", type);
 
-  return (
-    (type.notedBy?.id === userId && approval.notedBy === status) ||
-    (type.checkedBy?.id === userId && approval.checkedBy === status) ||
-    (type.checkedBy2?.id === userId && approval.checkedBy2 === status) ||
-    (type.recomApproval?.id === userId && approval.recomApproval === status) ||
-    (type.recomApproval2?.id === userId && approval.recomApproval2 === status) ||
-    (type.approveBy?.id === userId && approval.approveBy === status)
-  );
+  const sequenceNumber = FindRequestSequence(type, userId);
+  if(sequenceNumber === null) return false
+  
+
+
+  const sequenceNumber1 = RequestSequenceChecker(sequenceNumber, approval, status);
+
+  return sequenceNumber1;
 }
-
 
 // ✅ Controller to get requests where user has already acted (with pagination)
 export const getRequestsByUserStatus = async (req: AuthRequest, res: Response) => {

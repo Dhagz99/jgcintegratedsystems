@@ -167,7 +167,7 @@ export default function FundTransfer({requestTypeId, requestType} : FormProps){
 
             {isOpenModal && (
               <RequestModal size="xl" >
-                <ViewFundTransfer onClose={handleClose} onReset = {handleReset}   formData = {formData}  requestType={requestType}/>
+                <ViewFundTransfer onClose={handleClose} onReset={handleReset} formData={formData}  requestType={requestType}/>
               </RequestModal>
             )}
 

@@ -6,7 +6,7 @@ import ViewTransmittalMemo from "../request-view/ViewTransmittalMemo";
 import { FormProps } from "../../type/FormType";
 
 
-export default function TransmittalMemoPage({requestTypeId, requestType}:FormProps) {
+export default function TransmittalMemoPage({requestTypeId, requestType}: FormProps) {
   const [items, setItems] = useState<{ id: number; text: string }[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({to: "",from: "RFC-SINGCANG",date: "",description:"",note:"",items:""});
