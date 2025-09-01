@@ -5,8 +5,16 @@ import ButtonComponents from "../components/Buttons"
 import BadgeComponents from "../components/Badge"
 import TransferRequestBar from "../components/ProgressBar"
 import { FormsInputs } from "../components/FormsInputs"
+import { useState } from "react"
+import { useFetchApproval } from "../hooks/useApproval"
+import { MainRequest } from "../type/RequestType"
+import { formatRefId } from "@/app/utils/idConverter"
 
 export default function RequestMonitoring(){
+    const [status, setStatus] = useState("PENDING");
+    const [page, setPage] = useState(1);
+    const pageSize = 10; // 👈 adjust as needed
+    const { data, isLoading, isFetching } = useFetchApproval(status, page, pageSize);
     return(
         <div className="flex flex-col">
            <div>
@@ -60,8 +68,11 @@ export default function RequestMonitoring(){
                     </tr>
                 </thead>
                 <tbody>
-                  <tr className="text-xs  bg-[#FAFAFA] text-center text-black hover:bg-green-100">
-                      <td className="px-4 py-2 border-l border-b border-[#E9E3E3]">RP000001</td>
+                  {data?.data.map((req: MainRequest)=> (
+                    <tr key={req.id} className="text-xs  bg-[#FAFAFA] text-center text-black hover:bg-green-100">
+                   <td className="px-4 py-2 border-l border-b border-[#E9E3E3]">
+                       {formatRefId(req.id, "REF", 6)}
+                  </td>
                       <td className="px-4 py-2 border-b border-[#E9E3E3]">Monthly Budget</td>
                       <td className="px-4 py-2 border-b border-[#E9E3E3]">EMB MAIN BRANCH</td>
                       <td className="px-4 py-2 border-b border-[#E9E3E3]">July 24, 2025 09:29 AM</td>
@@ -69,33 +80,8 @@ export default function RequestMonitoring(){
                         <BadgeComponents type ="danger" label = "PENDING" />
                       </td>
                     </tr>
-                    <tr className="text-xs  bg-[#FAFAFA] text-center text-black hover:bg-green-100">
-                      <td className="px-4 py-2 border-l border-b border-[#E9E3E3]">RP000001</td>
-                      <td className="px-4 py-2 border-b border-[#E9E3E3]">Monthly Budget</td>
-                      <td className="px-4 py-2 border-b border-[#E9E3E3]">EMB MAIN BRANCH</td>
-                      <td className="px-4 py-2 border-b border-[#E9E3E3]">July 24, 2025 09:29 AM</td>
-                      <td className="px-4 py-2  border-r border-b border-[#E9E3E3]">
-                        <BadgeComponents type ="danger" label = "PENDING" />
-                      </td>
-                    </tr>  
-                     <tr className="text-xs  bg-[#FAFAFA] text-center text-black hover:bg-green-100">
-                        <td className="px-4 py-2 border-l border-b border-[#E9E3E3]">RP000001</td>
-                        <td className="px-4 py-2 border-b border-[#E9E3E3]">Monthly Budget</td>
-                        <td className="px-4 py-2 border-b border-[#E9E3E3]">EMB MAIN BRANCH</td>
-                        <td className="px-4 py-2 border-b border-[#E9E3E3]">July 24, 2025 09:29 AM</td>
-                        <td className="px-4 py-2  border-r border-b border-[#E9E3E3]">
-                          <BadgeComponents type ="danger" label = "PENDING" />
-                        </td>
-                    </tr>
-                    <tr className="text-xs  bg-green-100 text-center text-black hover:bg-green-100">
-                        <td className="px-4 py-2 border-l border-b border-[#E9E3E3]">RP000001</td>
-                        <td className="px-4 py-2 border-b border-[#E9E3E3]">Transfer Fund</td>
-                        <td className="px-4 py-2 border-b border-[#E9E3E3]">EMB MAIN BRANCH</td>
-                        <td className="px-4 py-2 border-b border-[#E9E3E3]">July 24, 2025 09:29 AM</td>
-                        <td className="px-4 py-2  border-r border-b border-[#E9E3E3]">
-                          <BadgeComponents type ="danger" label = "PENDING" />
-                        </td>
-                    </tr>
+                      ))
+                  }
                     
                 </tbody>
                 </table>

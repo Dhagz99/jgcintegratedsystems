@@ -17,9 +17,8 @@ const APPROVAL_FLOW = [
     "recomApproval2",
     "approveBy",
   ] as const;
-  
+
   type ApprovalKey = typeof APPROVAL_FLOW[number];
-  
   export function RequestSequenceChecker(sequenceNumber: number, approval: any, status: string) {
     if(approval[APPROVAL_FLOW[sequenceNumber]] === status ){
       for (let i = sequenceNumber + 1; i >= 0; i--) {
@@ -44,6 +43,5 @@ const APPROVAL_FLOW = [
     return true; // ✅ all steps up to sequenceNumber are approved
     }
     return false;
-   
   }
   

@@ -146,6 +146,7 @@ model RequestType {
 
 model MainRequest {
   id             Int          @id @default(autoincrement())
+  referenceCode String @unique @map("reference_code")
   requestTypeId  Int?         @map("request_type_id")
   requestById Int? @map("request_by_id")
   requestFromId Int? @map("requestFrom")
@@ -163,6 +164,7 @@ model MainRequest {
 
   approval      ApprovalTable[]
 
+ travelOrder  formTravelOrder? @relation("formTravelOrder1")
 
   @@map("main_request")
   @@index([requestTypeId])
@@ -216,6 +218,7 @@ model RequestLogs {
   approvalId Int? @map("approval_id")
   checkerType String @map("checker_type")
   approverId Int? @map("approver_id")
+  action String
   createdAt  DateTime @default(now()) @map("created_at")
 
   approval ApprovalTable? @relation(fields: [approvalId], references: [id], onDelete: SetNull)
@@ -227,5 +230,30 @@ model RequestLogs {
 
 
 }
+
+
+// XYRLY 
+
+
+model formTravelOrder {
+    id Int @id @default(autoincrement())
+    name String? @db.VarChar(100)
+    position String? @db.VarChar(50)
+    departure_date DateTime @db.Date
+    current_date DateTime @db.Date
+    destination String? @db.VarChar(100)
+    purpose_of_travel String? @db.VarChar(100)
+    items Json?
+    total_amount Decimal? @db.Decimal(12,2)
+    createdAt  DateTime @default(now()) @db.Timestamptz(6)
+    
+    mainFormId Int @unique @map("main_form_id")
+    mainForm MainRequest? @relation("formTravelOrder1", fields: [mainFormId], references: [id], onDelete: Cascade)
+
+    @@index([mainFormId])
+    @@map("form_travel_order")
+}
+
+
 
 

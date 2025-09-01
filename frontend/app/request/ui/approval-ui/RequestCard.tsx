@@ -9,6 +9,7 @@ import { useApproveRequest } from "../../hooks/useApproval";
 import { showError, showSuccess } from "../../components/ToastAlert";
 import SweetAlert from "../../components/Swal";
 import ViewFundTransferAction from "../request-view-action/ViewFundTransferAction";
+import { ViewApprovalTravelOrder } from "../request-view/ViewTravelOrder";
 
 type DataProps = {
     requests: MainRequest[];
@@ -142,9 +143,15 @@ export default function RequestCard( {requests, status ="PENDING"} : DataProps){
           </div>
         ))
       )}
-          {viewRequest &&(
-            <RequestModal size="lg" >
+        {(viewRequest && selectedRequest?.requestTypeId === 1) &&(
+            <RequestModal size="lg" title="Fund Transfer Details" onClose={closeModal} >
                  <ViewFundTransferAction mainRequest = {selectedRequest} onClose={closeModal} />
+            </RequestModal>
+          )}
+
+            {(viewRequest && selectedRequest?.requestTypeId === 2) &&(
+            <RequestModal size="xl" title="Travel Order Details" onClose={closeModal}>
+                 <ViewApprovalTravelOrder mainRequest = {selectedRequest} onClose={closeModal} />
             </RequestModal>
           )}
       </div>

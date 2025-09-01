@@ -5,6 +5,7 @@ import FundTransfer from '../ui/request-form/FundTransfer';
 import ChangeFund from '../ui/request-form/ChangeFund';
 import { useFetchRequestType } from '../hooks/useRequest';
 import { RequestTypeDTO } from '../type/RequestType';
+import TravelOrder from '../ui/request-form/TravelOrder';
 ;
 
 export default function SubmitForm() {
@@ -57,6 +58,10 @@ export default function SubmitForm() {
         {requestTypeId === 1 && (
           <FundTransfer requestTypeId={requestTypeId} requestType={selectedType} />
         )}
+
+      {requestTypeId === 2 && (
+            <TravelOrder requestTypeId={requestTypeId} requestType={selectedType} />
+          )}
     </div>
   );
 }
