@@ -9,19 +9,7 @@ import { FormPropsTravelOrder } from "../../type/FormType";
 export default function ViewTravelOrder({requestType,formData,onClose,onReset}: FormPropsTravelOrder) {
     if (!formData) return null;
 
-    const {
-        name,
-        position,
-        departure_date,
-        current_date,
-        purpose_of_travel,
-        destination,
-        items,
-        onSubmit,
-        submitting,
-        branchName,
-        address,
-      } = formData;
+    const {name,position,departure_date,current_date,purpose_of_travel,destination,items,onSubmit,submitting,branchName,address} = formData;
     
 
     const totalAmount = items.reduce((sum, entry) => {
@@ -176,8 +164,7 @@ export default function ViewTravelOrder({requestType,formData,onClose,onReset}: 
 
 
 
-export function ViewApprovalTravelOrder({mainRequest, formData, onClose,}:FormPropsTravelOrder){
-
+export function ViewApprovalTravelOrder({mainRequest, formData, onClose}: FormPropsTravelOrder) {
 
     return(
       <div className="py-1 px-2 max-h-[70vh] overflow-y-auto">

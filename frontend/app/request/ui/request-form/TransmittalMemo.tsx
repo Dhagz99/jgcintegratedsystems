@@ -1,26 +1,58 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AddBox } from "@mui/icons-material";
 import RequestModal from "../../components/RequestModal";
 import ViewTransmittalMemo from "../request-view/ViewTransmittalMemo";
-import { FormProps } from "../../type/FormType";
+import { FormProps, TransmittalData } from "../../type/FormType";
+import { useFetchUser } from "@/hooks/useAuth";
+import { useFetchBranches, useFetchUserList } from "../../hooks/useRequest";
+import SearchableInput from "../../components/SearchableInputs";
+import { Option1 } from "../../type/RequestType";
+
 
 
 export default function TransmittalMemoPage({requestTypeId, requestType}: FormProps) {
   const [items, setItems] = useState<{ id: number; text: string }[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [formData, setFormData] = useState({to: "",from: "RFC-SINGCANG",date: "",description:"",note:"",items:""});
+  const [formData, setFormData] = useState({toId: 0,toName:"",from: 0,date: "",description:"",note:"",items:[]});
+  const { data: user } = useFetchUser();
+   const { data: users = [] } = useFetchUserList();
+  const { data: branches, isLoading, isError } = useFetchBranches();
+  const [counter, setCounter] = useState(1);
+
+  useEffect(() => {
+    if (user) {
+      setFormData((prev) => ({ 
+        ...prev, 
+        from: user.branchId ?? 0   
+      }));
+    }
+  }, [user]);
+
+
+    const userOptions: Option1[] = users.map((u) => ({
+        id: u.id,
+        name: u.name,
+        position: u.position,
+      }));
+  
+
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({ ...prevData, [name]: value }));
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: name === "from" ? Number(value) : value 
+    }));
   };
 
-
+ 
+  
   const handleAddItem = () => {
-    setItems([...items, { id: Date.now(), text: "" }]);
+    setItems([...items, { id: counter, text: "" }]);
+    setCounter(counter + 1);
   };
 
   const handleRemoveItem = (id: number) => {
@@ -38,6 +70,13 @@ export default function TransmittalMemoPage({requestTypeId, requestType}: FormPr
 };
 
 
+const handleResetForm = () => {
+  setFormData({toId: 0,toName:"",from: 0,date: "",description:"",note:"",items:[]});
+  setItems([]);      
+  setCounter(1); 
+};
+
+
   return (
     <div className="bg-white border border-[#ECECEC] min-h-90 py-4 px-3 rounded-md">
       <div className="text-center">
@@ -45,35 +84,45 @@ export default function TransmittalMemoPage({requestTypeId, requestType}: FormPr
       </div>
 
       <div>
-        <form
-          action=""
-          className="grid grid-cols-[repeat(auto-fit,minmax(20rem,1fr))] gap-x-10 gap-y-4 px-4 mt-8">
-          <div className="flex flex-col">
-            <label htmlFor="to" className="mb-2 font-semibold">To</label>
-            <input
-              type="text"
-              name="to"
-              id="to"
-              value={formData.to}
-              onChange={handleInputChange}
-              placeholder="Enter to..."
-              className="border border-gray-300 rounded-lg bg-gray-50 p-2"
-            />
-          </div>
+        <form action="" className="grid grid-cols-[repeat(auto-fit,minmax(20rem,1fr))] gap-x-10 gap-y-4 px-4 mt-8">
+        <div className="flex flex-col">
+                <label htmlFor="to" className="mb-2 font-semibold font-sm">To</label>
+                <SearchableInput
+                    data={userOptions}
+                    placeholder="Search user..."
+                    name="to"
+                    value={formData.toId}
+                    onChange={(value) => {
+                        const selected = userOptions.find(u => u.id === value);
+                        setFormData(prev => ({
+                        ...prev,
+                        toId: value as number,
+                        toName: selected?.name ?? "",
+                        toPosition:selected?.position ?? "",
+                        }));
+                    }}
+                    />
+              </div>
 
+       
+
+          
           <div className="flex flex-col">
-                <label htmlFor="from" className="mb-2 font-semibold">From</label>
-                <select
-                  name="from"
-                  id="from"
-                  value={formData.from}
-                  onChange={handleInputChange}
-                  className="border border-gray-300 rounded-lg bg-gray-50 p-2">
-                  <option value="RFC-SINGCANG">RFC-SINGCANG</option>
-                  <option value="EMB-MAIN">EMB-MAIN</option>
-                  <option value="EMB-CADIZ">EMB-CADIZ</option>
-                </select>
-          </div>
+          <label className="mr-2 mb-2 font-semibold">From:</label>
+          <select
+            name="from"
+            value={formData.from}
+            onChange={handleInputChange}
+            className="border border-gray-300 bg-gray-50 p-2 rounded-lg">
+            <option value={0}>-- Select Branch --</option>
+            {branches?.map((branch) => (
+              <option key={branch.id} value={branch.id}>
+                {branch.branchName}
+              </option>
+            ))}
+          </select>
+        </div>
+
 
 
           <div className="flex flex-col">
@@ -106,8 +155,8 @@ export default function TransmittalMemoPage({requestTypeId, requestType}: FormPr
               id="note"
               value={formData.note}
               onChange={handleInputChange}
-              className="border border-gray-300 rounded-lg p-2 bg-gray-50"
-            ></textarea>
+              className="border border-gray-300 rounded-lg p-2 bg-gray-50">
+              </textarea>
           </div>
 
          
@@ -158,7 +207,15 @@ export default function TransmittalMemoPage({requestTypeId, requestType}: FormPr
 
             {isModalOpen && (
                 <RequestModal title="Transmittal Memo Summary" size="xxl" onClose={() => setIsModalOpen(false)}>
-                <ViewTransmittalMemo formData={formData} items={items} requestType={requestType}/>
+                <ViewTransmittalMemo 
+                  formData={{...formData,
+                    fromName: branches?.find(b => b.id === formData.from)?.branchName ?? "",
+                    requestedBy: user?.name ?? "",  
+                    requestedPosition: user?.position ?? "",
+                    branchName: branches?.find(b => b.id === formData.from)?.branchName ?? "",
+                    address: branches?.find(b => b.id === formData.from)?.address ?? "",
+                    }}
+                  items={items} requestType={requestType}  onClose={() => setIsModalOpen(false)}  onReset={handleResetForm} />
                 </RequestModal>
             )}
 

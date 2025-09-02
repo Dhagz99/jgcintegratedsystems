@@ -8,6 +8,8 @@ import { RequestTypeDTO } from '../type/RequestType';
 import TravelOrder from '../ui/request-form/TravelOrder';
 import ProposedBudget from '../ui/request-form/ProposedBudget';
 import TransmittalMemoPage from '../ui/request-form/TransmittalMemo';
+import Disburse from '../ui/request-form/Disburse';
+
 
 export default function SubmitForm() {
   const [requestTypeId, setRequestTypeId] = useState<number | null>(null);
@@ -72,6 +74,10 @@ export default function SubmitForm() {
           <TransmittalMemoPage requestTypeId={requestTypeId} requestType={selectedType}/>
         )}
 
+
+        {requestTypeId === 6 && (
+          <Disburse requestTypeId={requestTypeId} requestType={selectedType}/>
+        )}
 
 
         

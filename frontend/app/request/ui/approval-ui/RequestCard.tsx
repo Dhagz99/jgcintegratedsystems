@@ -10,7 +10,11 @@ import { showError, showSuccess } from "../../components/ToastAlert";
 import SweetAlert from "../../components/Swal";
 import ViewFundTransferAction from "../request-view-action/ViewFundTransferAction";
 import { ViewApprovalTravelOrder } from "../request-view/ViewTravelOrder";
-import ViewProposedBudget from "../request-view/ViewProposedBudget";
+import { ViewApprovalProposedBudget } from "../request-view/ViewProposedBudget";
+import  { ViewApprovalTransmittalMemo } from "../request-view/ViewTransmittalMemo";
+import { ViewApprovalDisburse } from "../request-view/ViewDisburse";
+
+
 
 type DataProps = {
     requests: MainRequest[];
@@ -162,10 +166,25 @@ export default function RequestCard( {requests, status ="PENDING"} : DataProps){
 
         
         {(viewRequest && selectedRequest?.requestTypeId === 3) &&(
-            <RequestModal size="xl" title="Proposed Budget Details" onClose={closeModal}>
-                 <ViewProposedBudget mainRequest = {selectedRequest} onClose={closeModal} />
+            <RequestModal size="xxl" title="Proposed Budget Details" onClose={closeModal}>
+                 <ViewApprovalProposedBudget mainRequest = {selectedRequest} onClose={closeModal} />
             </RequestModal>
           )}
+
+
+        {(viewRequest && selectedRequest?.requestTypeId === 4) && (
+            <RequestModal size="xl" title="Transmittal Details" onClose={closeModal}>
+                <ViewApprovalTransmittalMemo mainRequest = {selectedRequest} onClose={closeModal} />
+            </RequestModal>
+          )}
+
+        
+        {(viewRequest && selectedRequest?.requestTypeId === 6) && (
+            <RequestModal size="xxl" title="Disburse Details" onClose={closeModal}>
+                <ViewApprovalDisburse mainRequest = {selectedRequest} onClose={closeModal} />
+            </RequestModal>
+          )}
+
 
 
 

@@ -1,4 +1,4 @@
-import { RequestTypeDTO } from "./RequestType";
+import { RequestTypeDTO, Users } from "./RequestType";
 import { MainRequest } from "./RequestType";
 
 export type FormProps = {
@@ -74,38 +74,69 @@ export interface Category {
     budgets: Budget[];
 }
 
-export interface FormData {
-    to: string;
-    from: string;
+export interface FormDataDisburse {
+    toId?: number;
+    toName:string;
+    fromId?: number;
+    from?:string;
     subject: string;
     date: string;
     description: string;
+    note:string;
+    toPosition?:string;
+    fromName:string;
+    companyName?: string; 
+    address?:string;
+    telephone?:string;
+    total_amount?:number;
+    requestTypeId?:number;
+    requestFromId?: number;
+    items?: Category[]; 
+    requestTo?: Users | null;
 }
 
 export interface DisbursePaperProps {
-    formData: FormData;
-    categories: Category[];
+    formData?: FormDataDisburse;
+    categories?: Category[];
+    mainRequest?: MainRequest | null;
+    requestType?: RequestTypeDTO | null;
+    onClose?: () => void;
+    onReset?: () => void;
   }
 
 
 export interface TransmittalData{
-    to:string;
-    from:string;
-    date:string;
-    description:string;
+    toId?: number;
+    toName?:string;
+    from?:number;
+    fromName?: string;  
+    date?:string;
+    description?:string;
     note?:string;
-    items:string;
+    items?:TransmittalItem[];
     requestToId?:number;
+    requestedBy?:string;
+    requestedPosition?: string;
+    branchName?: string;
+    address?:string;
+    requestTypeId?:number;
+    requestFromId?:number;
+    requestTo?: Users | null;
 }   
+
+
 
 export interface TransmittalItem {
     id: number;
     text: string;
-  }
-export interface TransmittalProps{
-    formData: TransmittalData;
-    items: TransmittalItem[];
+}
+
+
+export interface FormPropsTransmittalProps{
+    formData?: TransmittalData;
+    items?: TransmittalItem[];
     requestType?: RequestTypeDTO | null;
+    mainRequest?: MainRequest | null;
     onClose?: () => void;
     onReset?: () => void;
 }
@@ -121,9 +152,6 @@ export type FormPropsTravelOrder = {
     
 };
   
-
-  
-
 export type FormPropsProposedBudget = {
   requestType?: RequestTypeDTO | null;
   formData?: AddProposedBudgetPayload | null; 
@@ -132,5 +160,6 @@ export type FormPropsProposedBudget = {
   onReset?: () => void;
   onSuccess?: () => void;
 };
+
 
 

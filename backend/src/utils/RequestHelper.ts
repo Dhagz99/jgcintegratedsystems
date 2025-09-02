@@ -1,6 +1,6 @@
 export  function FindRequestSequence(reqType: any, userId: number) {
 
-    if(reqType.noteById === userId ) return 0;
+    if(reqType.notedById === userId ) return 0;
     if(reqType.checkedById === userId ) return 1;
     if(reqType.checkedBy2Id === userId ) return 2;
     if(reqType.recomApprovalId === userId ) return 3;

@@ -395,7 +395,6 @@ export default function ProposedBudget({requestTypeId, requestType}: FormProps) 
                     }}
                     onSuccess={handleSuccess}
                     onClose={() => setIsModalOpen(false)}
-                 
                     />
 
                

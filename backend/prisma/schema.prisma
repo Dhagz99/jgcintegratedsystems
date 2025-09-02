@@ -52,6 +52,8 @@ model User {
 
   //Form
   formRequestFundTo FormFundTransfer[]
+  formRequestTransmittalTo formTransmittalMemo[]
+  formRequestDisburseTo formDisburse[]
 
 
   requestLogs      RequestLogs[]
@@ -106,7 +108,7 @@ model RequestType {
   updateAt  DateTime @updatedAt
 
 
-   mainRequests  MainRequest[] @relation("MainRequest_RequestType")
+  mainRequests  MainRequest[] @relation("MainRequest_RequestType")
 
   @@map("request_types")
   // (optional) add indexes to speed up joins/lookups:
@@ -146,6 +148,7 @@ model RequestType {
 
 model MainRequest {
   id             Int          @id @default(autoincrement())
+  referenceCode String @unique @map("reference_code")
   requestTypeId  Int?         @map("request_type_id")
   requestById Int? @map("request_by_id")
   requestFromId Int? @map("requestFrom")
@@ -163,7 +166,9 @@ model MainRequest {
 
   approval      ApprovalTable[]
   travelOrder  formTravelOrder? @relation("formTravelOrder1")
+  transmittalMemo formTransmittalMemo? @relation("formTransmittalMemo")
   proposedBudget formProposedBudget[]
+  disburse formDisburse? @relation("formDisburse")
 
 
   @@map("main_request")
@@ -205,19 +210,19 @@ model ApprovalTable {
 
   mainRequest MainRequest? @relation(fields: [mainFormId], references: [id], onDelete: SetNull)
   
-
   requestLogs  RequestLogs[]
   @@index([mainFormId])
   @@map("approval_table")
-
-
 }
+
+
 
 model RequestLogs {
   id  Int @id @default(autoincrement())
   approvalId Int? @map("approval_id")
   checkerType String @map("checker_type")
   approverId Int? @map("approver_id")
+  action String
   createdAt  DateTime @default(now()) @map("created_at")
 
   approval ApprovalTable? @relation(fields: [approvalId], references: [id], onDelete: SetNull)
@@ -276,5 +281,42 @@ model formProposedBudget {
   @@index([mainFormId])
   @@map("form_proposed_budget")
 }
+
+
+model formTransmittalMemo{
+  id Int @id @default(autoincrement())
+  from String? @db.VarChar(100)
+  date DateTime @db.Date
+  description String? @db.VarChar(200)
+  note String? @db.VarChar(200)
+  items Json?
+
+  to_id Int?  @map("to_id")
+  requestTo   User? @relation(fields: [to_id], references: [id], onDelete: SetNull)
+
+  mainFormId Int @unique @map("main_form_id")
+  mainForm MainRequest? @relation("formTransmittalMemo", fields: [mainFormId], references: [id], onDelete: Cascade)
+  @@map("form_transmittal_memo")
+}
+
+model formDisburse {
+  id Int @id @default(autoincrement())
+  from String? @db.VarChar(200)
+  date DateTime @db.Date@map("date")
+  subject String? @db.VarChar(255)
+  description  String?   @db.Text         
+  note         String?   @db.Text  
+  total_amount Decimal? @db.Decimal(12,2)
+  items Json?
+  
+  to_id Int?  @map("to_id")
+  requestTo   User? @relation(fields: [to_id], references: [id], onDelete: SetNull)
+
+  mainFormId Int @unique @map("main_form_id")
+  mainForm MainRequest? @relation("formDisburse", fields: [mainFormId], references: [id], onDelete: Cascade)
+
+  @@map("form_disburse")
+}
+
 
 
