@@ -78,6 +78,7 @@ export const addFundTransfer = async (req: AuthRequest, res: Response) => {
       include: { fundTransfer: true, approval: true },
     });
 
+      // Step 2: Generate proper reference code
       const referenceCode = formatRefId(created.id, "REF", 6);
       // Step 3: Update the record
       const updateRefCOde = await prisma.mainRequest.update({
@@ -172,6 +173,7 @@ export const getRequestsForApprover = async (req: AuthRequest, res: Response) =>
 type MainRequestWithRelations = Prisma.MainRequestGetPayload<{
   include: {
     status: true,
+    referenceCode: true,
     fundTransfer: true;
     approval: true;
     requestFrom: true;
@@ -235,10 +237,8 @@ export const getRequestsByUserStatus = async (req: AuthRequest, res: Response) =
     const pageSize = parseInt((req.query.pageSize as string) || "10", 10);
 
     // Validate status
-
-    if (!Object.values($Enums.Statuses).includes(status as $Enums.Statuses)) {
-      return res.status(400).json({ message: "Invalid status" });
-    }      
+ 
+         
     // --- Fetch all requests (could optimize further w/ Prisma filtering) ---
     const requests: MainRequestWithRelations[] = await prisma.mainRequest.findMany({ 
       where: {
@@ -314,6 +314,7 @@ export const getRequestsByUserStatus = async (req: AuthRequest, res: Response) =
           },
         },
         requestBy: { select: { id: true, name: true, position: true } }, 
+        
       },
       orderBy: { id: "desc" },
     });
@@ -399,7 +400,7 @@ export const actOnRequest = async (req: AuthRequest, res: Response) => {
     if (Object.keys(updateData).length === 0) {
       return res.status(403).json({ message: "You are not an approver for this request" });
     }
-
+ 
     // ✅ Update approval row
 // ✅ Update approval row & create a log entry in the same call
 const newApproval = await prisma.approvalTable.update({
@@ -419,21 +420,53 @@ const newApproval = await prisma.approvalTable.update({
   },
 });
 
-
-    const io = req.app.get("io");
-    const nextApproverId = findNextApprover(request.requestType, newApproval); // ✅ first approval row
-    if (nextApproverId) {
-      console.log(`🔔 Emitting new_request approve to user_${nextApproverId}`);
-      io.to(`user_${nextApproverId}`).emit("new_request", {
-        receiverId: nextApproverId,
-        requestId: request.id,
-        content: request.requestType?.requestName,
+const io = req.app.get("io");
+  if(action == "REJECTED"){
+      const reject = await prisma.mainRequest.update({
+        where: {id: request.id},
+        data: {
+          status: "REJECTED",
+        }
+      })
+      io.emit("request_rejected", {
+        requestId: request.requestById,
+        actorId: userId,     // who rejected
+        receiverId: request.requestById, // who created/requested
+        content: "Request was rejected",
       });
-      console.log(`sending to user_${nextApproverId}`);
+  }else{
+    const nextApproverId = findNextApprover(request.requestType, newApproval); // ✅ first approval row
+    if (nextApproverId) { 
+        if(nextApproverId === "APPROVED"){
+          const approved = await prisma.mainRequest.update({
+            where: {id: request.id},
+            data: {
+              status: "APPROVED",
+            }
+          })
+          io.emit("request_approved", {
+            requestId: request.requestById,
+            actorId: userId,     // who rejected
+            receiverId: request.requestById, // who created/requested
+            content: "Request was approved",
+          });
+        }else{
+          io.to(`user_${nextApproverId}`).emit("new_request", {
+            receiverId: nextApproverId,
+            requestId: request.id,
+            content: request.requestType?.requestName,
+          });
+          console.log(`sending to user_${nextApproverId}`);
+         
+        }
+
     } else {
       console.log("no sender");
     }
+  }
 
+
+ 
 
     return res.json({ message: `Request ${action} successfully` });
   } catch (err) {

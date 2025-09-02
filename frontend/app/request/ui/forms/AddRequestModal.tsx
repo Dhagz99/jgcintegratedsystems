@@ -153,7 +153,9 @@ export default function AddRequestModal({ onClose, selectedData }: AddProps) {
                 options={notedByOptions}
                 placeholder="Select a person"
               />
-              <div></div>
+              <div>
+                
+              </div>
           </div>
             <div></div>
         </>

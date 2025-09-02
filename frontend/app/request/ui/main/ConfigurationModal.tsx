@@ -10,7 +10,6 @@ import AccountManagerModal from "./AccountManagerModal";
 export default function SystemConfigurationModal() {
     const menuItem = [
         {label: 'Request', icon: RequestPage, path: 'request'},
-        {label: 'Checker & Approver', icon: RequestPage, path: 'checker'},
         {label: 'Branch', icon: RequestPage, path: 'branch'},
         {label: 'Account Manager', icon: Person, path: 'accounts'},
     ]

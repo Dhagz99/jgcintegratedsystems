@@ -91,15 +91,15 @@ export default function AccountManagerModal() {
                                         </tr>
                                     ):(
                                     data?.map((user: PublicUserDTO) =>(
-                                        <tr key={user.id}>
-                                            <td>
+                                        <tr key={user.id} className="bg-white border-b border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                             <td className="px-6 py-1.5">
                                               <ButtonGroup onEdit={()=> handleEditChecker(user)} onDelete={() => handleDelete(user)} />
                                             </td>
-                                            <td>{user.name}</td>
-                                            <td>{user.email}</td>
-                                            <td>{user.username}</td>
-                                            <td>{user.role}</td>
-                                            <td>{user.branch?.branchName}</td>
+                                            <td className="px-6 py-1.5">{user.name}</td>
+                                            <td className="px-6 py-1.5">{user.email}</td>
+                                            <td className="px-6 py-1.5">{user.username}</td>
+                                            <td className="px-6 py-1.5">{user.role}</td>
+                                            <td className="px-6 py-1.5">{user.branch?.branchName}</td>
                                         </tr>
                                     ))
                                     

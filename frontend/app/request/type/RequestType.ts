@@ -92,6 +92,7 @@ export type CheckerWithName = Checker & {
     requestTypeId: number;
     requestById: number;
     requestFromId: number;
+    referenceCode: string;
     status: "PENDING" | "APPROVED" | "REJECTED";
     requestDate: string;
     remarks: string | null;
@@ -136,3 +137,7 @@ export type CheckerWithName = Checker & {
   }
 
 
+
+export  type DataProps = {
+    mainRequest: MainRequest | null;
+}

@@ -37,6 +37,28 @@ export default function NotificationsListener({ user }: { user: User }) {
       }
     });
 
+    socket.on("request_rejected", (data) => {
+      console.log("❌ Request rejected:", data);
+      // ✅ refresh everyone's approval list
+      queryClient.invalidateQueries({ queryKey: ["approvals"] });
+    
+      // optional: toast for the reject action
+      if (user.id === data.actorId || user.id === data.receiverId) {
+        toast.error(`Request ${data.requestId} was rejected`);
+      }
+    });
+
+        // listen for rejected request
+    socket.on("request_approved", (data) => {
+      console.log(" Request approved:", data);
+      // ✅ refresh everyone's approval list
+      queryClient.invalidateQueries({ queryKey: ["approvals"] });
+      // optional: toast for the reject action
+      if (user.id === data.actorId || user.id === data.receiverId) {
+        toast.error(`Request ${data.requestId} was approved`);
+      }
+    });
+
        // Listen to our custom event
       //  socket.on("request_action", (data) => {
       //   if(user.id == data.receiverId){

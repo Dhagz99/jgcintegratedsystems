@@ -28,7 +28,7 @@ export default function RequestMainLayout({
                                 JGC Corp.
                             </div>
                         </div>
-                        <SidebarMenu />
+                        <SidebarMenu  />
                     </div>
             </div>
                 <div className="flex flex-col w-full py-2 pr-2">

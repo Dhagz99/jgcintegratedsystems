@@ -4,6 +4,7 @@ import { Approval } from "../type/BaseType";
 import { MainRequest } from "../type/RequestType";
 import { useAddGlobal, useFetchGlobal } from "./useGlobal";
 import api from "@/lib/api";
+import { useFetchUser } from "@/hooks/useAuth";
 
 export interface PaginatedResponse<T> {
     data: T[];
@@ -12,8 +13,9 @@ export interface PaginatedResponse<T> {
   }
   
   export const useFetchApproval = (status: string, page: number, pageSize: number) => {
+    const { data: user } = useFetchUser(); // get logged-in user (id, email, etc.)
     return useFetchGlobal<PaginatedResponse<MainRequest>>({
-      queryKey: ["approvals", status, page, pageSize],
+      queryKey: ["approvals",user?.id, status, page, pageSize],
       queryFn: () =>
         getDataRes<PaginatedResponse<MainRequest>>("/request/get-request-action", {
           status,

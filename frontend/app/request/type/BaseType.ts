@@ -18,9 +18,20 @@ export type ApproverRole = {
     recomApproval: "EMPTY" | "PENDING" | "APPROVED" | "REJECTED";
     recomApproval2: "EMPTY" | "PENDING" | "APPROVED" | "REJECTED";
     approveBy: "EMPTY" | "PENDING" | "APPROVED" | "REJECTED";
+    requestLogs: RequestLogs;
     createdAt: string;
     updateAt: string;
+
   };
+
+  export type RequestLogs = {
+      id: number;
+      approvalId: number;
+      checkerType: number;
+      approverId: number;
+      createdAt: string;
+      updateAt: string;
+  }
   
   export type FundTransfer = {
     id: number;
