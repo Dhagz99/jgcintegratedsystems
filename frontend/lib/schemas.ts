@@ -5,7 +5,7 @@ export const loginSchema = z.object({
     password: z.string().min(6),
 })
 
-const RoleEnum = z.enum(["Admin", "User", "Branch", "Superadmin"]);
+const RoleEnum = z.enum(["Admin", "User", "Branch", "Superadmin",  "Coordinator"]);
 
 export const registerSchema = z.object({
     id: z.number().optional(),

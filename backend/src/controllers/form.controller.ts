@@ -157,6 +157,12 @@ type MainRequestWithRelations = Prisma.MainRequestGetPayload<{
     fundTransfer: true;
     approval: true;
     requestFrom: true;
+    countSheet: {
+      include: {
+        TravelCountSheet:  true;
+        CashCountSheet: true;
+      }
+    };
     requestType: {
       include: {
         notedBy: true;
@@ -248,6 +254,12 @@ export const getRequestsByUserStatus = async (req: AuthRequest, res: Response) =
         },
         approval: true,
         requestFrom: true,
+        countSheet: {
+            include: {
+              TravelCountSheet:  true,
+              CashCountSheet:true,
+            }
+        },
         requestType: {
           include: {
             notedBy:{

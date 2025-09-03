@@ -1,5 +1,7 @@
 import { Approval, ApproverRole, FundTransfer } from "./BaseType";
 
+import { countSheet, TravelCountSheet,CashCountSheet } from "./FundType";
+
  export type Option = { value: number | string; label: string };
 
 
@@ -48,6 +50,9 @@ export type CheckerWithName = Checker & {
     updateAt: string;    
 
     fundTransfer: FundTransfer | null;
+
+    countSheet: countSheet| null;
+
   
   
     notedBy: Users | null;
@@ -96,8 +101,10 @@ export type CheckerWithName = Checker & {
     remarks: string | null;
     createdAt: string;
     updateAt: string;
+    
   
     fundTransfer: FundTransfer;
+    countSheet:countSheet;
     approval: Approval[];
     requestFrom: RequestFrom;
     requestType: RequestType;

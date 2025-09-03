@@ -9,6 +9,8 @@ import { useApproveRequest } from "../../hooks/useApproval";
 import { showError, showSuccess } from "../../components/ToastAlert";
 import SweetAlert from "../../components/Swal";
 import ViewFundTransferAction from "../request-view-action/ViewFundTransferAction";
+import { mainRequest } from "../../lib/request.schema";
+import TravelSummaryModal from "../forms/TravelSumModal";
 
 type DataProps = {
     requests: MainRequest[];
@@ -142,11 +144,19 @@ export default function RequestCard( {requests, status ="PENDING"} : DataProps){
           </div>
         ))
       )}
-          {viewRequest &&(
+          {/* {viewRequest && selectedRequest?.requestTypeId ===3 &&(
             <RequestModal size="lg" >
                  <ViewFundTransferAction mainRequest = {selectedRequest} onClose={closeModal} />
             </RequestModal>
-          )}
+          )} */}
+          {(viewRequest && (selectedRequest?.requestTypeId === 3 || selectedRequest?.requestTypeId === 4)) &&(
+          <RequestModal size="lg" nested title="Cash Count Sheet" onClose={closeModal}>
+            <TravelSummaryModal
+              onClose={closeModal}
+              mainRequest={selectedRequest} 
+            />
+          </RequestModal>
+        )}
       </div>
         )
 }

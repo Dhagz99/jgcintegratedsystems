@@ -5,6 +5,7 @@ import FundTransfer from '../ui/request-form/FundTransfer';
 import ChangeFund from '../ui/request-form/ChangeFund';
 import { useFetchRequestType } from '../hooks/useRequest';
 import { RequestTypeDTO } from '../type/RequestType';
+import FundReplenishment from '../ui/request-form/FundReplenishment';
 ;
 
 export default function SubmitForm() {
@@ -54,9 +55,12 @@ export default function SubmitForm() {
         </select>
       </div>
       {/* You can pass either the id or the full object to children */}
-        {requestTypeId === 1 && (
-          <FundTransfer requestTypeId={requestTypeId} requestType={selectedType} />
-        )}
+        {(requestTypeId === 4 || requestTypeId === 3) && (
+        <FundReplenishment requestTypeId={requestTypeId} requestType={selectedType} />
+      )}
+      {requestTypeId === 3 && (
+        <FundTransfer requestTypeId={requestTypeId} requestType={selectedType} />
+      )}
     </div>
   );
 }

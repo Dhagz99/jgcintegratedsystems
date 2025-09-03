@@ -142,3 +142,136 @@ export const createFundTransfer = formFundTransfer.omit({
 export type FormFundTransfer = z.infer<typeof formFundTransfer>;
 export type CreateFundTrasnfer = z.infer<typeof createFundTransfer>;
 
+
+
+// Travel Fundings Schema
+
+
+export const TravelingFundsSchema = z.object({
+    
+    tagsField: z.array(z.string().min(1)).min(1, "At least one tag is required"),
+
+    travelDate: z.coerce.date(),
+
+   
+    travelling: z.string()
+        .max(100, "Your text is too long."),
+
+    fuelFee: z.coerce.number()
+        .min(0, "fee must be 0 or greater")
+        .max(100000, "fee must not exceed limit.")
+        .refine(val => /^\d+(\.\d{1,2})?$/.test(val.toString()), {
+        message: "Maximum of 2 decimal places allowed"
+        }),
+
+    repairs: z.array(z.string().min(1)).optional(),
+
+    litigationExp: z.coerce.number()
+        .min(0, "fee must be 0 or greater")
+        .max(100000, "fee must not exceed limit.")
+        .refine(val => /^\d+(\.\d{1,2})?$/.test(val.toString()), {
+        message: "Maximum of 2 decimal places allowed"
+        }),
+
+    totalFunds: z.coerce.number()
+        .min(0, "fee must be 0 or greater")
+        .max(100000, "fee must not exceed limit.")
+        .refine(val => /^\d+(\.\d{1,2})?$/.test(val.toString()), {
+        message: "Maximum of 2 decimal places allowed"
+        }),
+
+    travelKm: z.string()
+        .max(10, "You exceeded the text limit."),
+
+    fundRemarks: z.string()
+        .max(200, "Make your remark shorter"),
+
+    startDate: z.coerce.date(),
+    endDate: z.coerce.date(),
+
+});
+
+export type travelFund = z.infer<typeof TravelingFundsSchema>;
+    
+
+export const CashFundRepSchema = z.object({
+    funDate: z.coerce.date(),
+    payee: z.string()
+        .max(100, "Your text is too long."),
+    fundRemarks: z.string()
+        .max(200, "Make your remark shorter"),
+    fundAmount: z.coerce.number() .min(0, "amount must be 0 or greater")
+        .max(100000, "amount must not exceed limit.")
+        .refine(val => /^\d+(\.\d{1,2})?$/.test(val.toString()), {
+        message: "Maximum of 2 decimal places allowed"
+        }),
+    miscExp: z.coerce.number()
+        .min(0, "fee must be 0 or greater")
+        .max(100000, "fee must not exceed limit.")
+        .refine(val => /^\d+(\.\d{1,2})?$/.test(val.toString()), {
+        message: "Maximum of 2 decimal places allowed"
+        }),
+    powerLight: z.coerce.number()
+        .min(0, "fee must be 0 or greater")
+        .max(100000, "fee must not exceed limit.")
+        .refine(val => /^\d+(\.\d{1,2})?$/.test(val.toString()), {
+        message: "Maximum of 2 decimal places allowed"
+        }),
+    telephone: z.coerce.number()
+        .min(0, "fee must be 0 or greater")
+        .max(100000, "fee must not exceed limit.")
+        .refine(val => /^\d+(\.\d{1,2})?$/.test(val.toString()), {
+        message: "Maximum of 2 decimal places allowed"
+        }),
+    dueToMh: z.coerce.number()
+        .min(0, "fee must be 0 or greater")
+        .max(100000, "fee must not exceed limit.")
+        .refine(val => /^\d+(\.\d{1,2})?$/.test(val.toString()), {
+        message: "Maximum of 2 decimal places allowed"
+        }),
+
+
+    startDate: z.coerce.date(),
+    endDate: z.coerce.date(),
+});
+
+export type CashFundRep = z.infer<typeof CashFundRepSchema>;
+
+
+export const AddcashCountSchema = z
+  .object({
+    office: z.string().min(1, "Required").max(50),
+    branch:z.string().min(1,"Required").max(100),
+
+    dateCounted: z.coerce.date(),
+    nameFund: z.string().min(1, "Required").max(100),
+    fundAmount: z.coerce.number().min(0, "Must be 0 or greater"),
+    reference: z.string().max(100).optional(),
+
+    denoms: z.array(z.coerce.number()),
+    pieces: z.array(z.coerce.number().min(0, "Must be 0 or greater")),
+    amounts: z.array(z.coerce.number().min(0, "Must be 0 or greater")),
+    fundPerCount: z.coerce.number().min(0, "Must be 0 or greater"),
+    cashShort: z.coerce.number().min(0, "Must be 0 or greater"),
+    checked: z.array(z.coerce.boolean()).optional(),
+  })
+  .passthrough(); 
+
+export type addCcashCount = z.infer<typeof AddcashCountSchema>;
+
+
+export const TravelFundsModalSchema=z.object({
+    company: z.string().min(1, "Required").max(100),
+    branch:z.string().min(1,"Required").max(100),
+   
+})
+
+export type FundsModal = z.infer<typeof TravelFundsModalSchema>;
+
+export const CashFundsModalSchema=z.object({
+    company: z.string().min(1, "Required").max(100),
+    branch:z.string().min(1,"Required").max(100),
+   
+})
+
+export type CashModal = z.infer<typeof CashFundsModalSchema>;

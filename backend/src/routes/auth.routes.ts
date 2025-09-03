@@ -4,6 +4,7 @@ import { authenticate } from '../middleware/auth.middleware' // 👈 import midd
 import { addBranch, addRequestType, deleteBranch, fetchBranches, fetchListRequestTypes, updateBranch } from '../controllers/request.controller'
 import { actOnRequest, addFundTransfer, getRequestsByUserStatus, getRequestsForApprover } from '../controllers/form.controller'
 import { upload } from '../middleware/upload.middleware'
+import { createFund } from '../controllers/fund.controller'
 
 const router = Router()
 router.post('/register', upload.single('signature'), register);
@@ -36,6 +37,10 @@ router.post('/request/add-fund-transfer/', authenticate, addFundTransfer);
 router.get('/request/get-request-approver/', authenticate, getRequestsForApprover);
 router.get('/request/get-request-action/', authenticate, getRequestsByUserStatus);
 router.patch('/request/:id/action/', authenticate, actOnRequest);
+
+
+//CountSheet
+router.post('/request/add-count-sheet', authenticate, createFund);
 
 
 export default router
