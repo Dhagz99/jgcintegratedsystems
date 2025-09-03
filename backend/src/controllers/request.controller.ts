@@ -1,8 +1,13 @@
 import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
 import { requestTypeSchema } from "../lib/request.schema";
+import { AuthRequest } from "../middleware/auth.middleware";
 
 const prisma = new PrismaClient();
+const toNum = (v: unknown): number | undefined => {
+  const n = Number(v);
+  return Number.isFinite(n) ? n : undefined;
+};
 
 // export const addChecker = async (req: Request, res: Response) => {
 //   const { userId, position, initial } = req.body;
@@ -280,3 +285,21 @@ export const fetchListRequestTypes = async (_req: Request, res: Response) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+
+
+
+
+export const fetchUserLogs= async(req: AuthRequest, res: Response) =>{
+  try {
+    const userId = toNum(req.user?.id);
+    if (!userId) return res.status(401).json({ message: "Unauthorized" });
+      const logs = await prisma.requestLogs.findMany({
+        orderBy: { id: "desc" },
+        where: { approverId: Number(userId) },
+      });
+      res.status(200).json(logs);
+  }catch (error){
+      console.error("Error fetching logs:", error);
+      res.status(500).json({message: "Internal server error"});
+  }
+}

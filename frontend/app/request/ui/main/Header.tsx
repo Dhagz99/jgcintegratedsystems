@@ -2,7 +2,7 @@
 import { ManageHistory, ManageHistoryOutlined, MenuOpen, Notifications, NotificationsOutlined, Person, PersonOutline, Search } from "@mui/icons-material";
 // import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { LogsModal, ProfileModal } from "./HeaderModal";
+import { LogsModal, NotificationModal, ProfileModal } from "./HeaderModal";
 import RequestModal from "../../components/RequestModal";
 import SystemConfigurationModal from "./ConfigurationModal";
 
@@ -77,6 +77,10 @@ export default function RequestHeader() {
                 
                 {active == 'logs'  &&(
                         <LogsModal />
+                )}
+
+                {active == 'notification'  &&(
+                        <NotificationModal />
                 )}
                 {active == 'profile'  &&(
                       <ProfileModal handleClickModal={handleClickModal} />    

@@ -10,6 +10,11 @@ import { showError, showSuccess } from "../../components/ToastAlert";
 import SweetAlert from "../../components/Swal";
 import ViewFundTransferAction from "../request-view-action/ViewFundTransferAction";
 import { ViewApprovalTravelOrder } from "../request-view/ViewTravelOrder";
+import { ViewApprovalProposedBudget } from "../request-view/ViewProposedBudget";
+import { ViewApprovalTransmittalMemo } from "../request-view/ViewTransmittalMemo";
+import { ViewApprovalDisburse } from "../request-view/ViewDisburse";
+import TravelSummaryModal from "../forms/TravelSumModal";
+
 
 type DataProps = {
     requests: MainRequest[];
@@ -99,7 +104,7 @@ export default function RequestCard( {requests, status ="PENDING"} : DataProps){
                 </div>
                 <div className="flex flex-col">
                   <p className="text-[.65rem] text-gray-500">Branch:</p>
-                  <p className="text-xs font-semibold">{req.requestFrom.branchName}</p>
+                  <p className="text-xs font-semibold">{req.requestFrom?.branchName ?? ''}</p>
                 </div>
                 <div className="flex flex-col">
                   <p className="text-[.65rem] text-gray-500">Date:</p>
@@ -154,7 +159,41 @@ export default function RequestCard( {requests, status ="PENDING"} : DataProps){
                  <ViewApprovalTravelOrder mainRequest = {selectedRequest} onClose={closeModal} />
             </RequestModal>
           )}
+
+      {(viewRequest && selectedRequest?.requestTypeId === 3) &&(
+            <RequestModal size="xxl" title="Proposed Budget Details" onClose={closeModal}>
+                 <ViewApprovalProposedBudget mainRequest = {selectedRequest} onClose={closeModal} />
+            </RequestModal>
+          )}
+
+
+        {(viewRequest && selectedRequest?.requestTypeId === 4) && (
+            <RequestModal size="xl" title="Transmittal Details" onClose={closeModal}>
+                <ViewApprovalTransmittalMemo mainRequest = {selectedRequest} onClose={closeModal} />
+            </RequestModal>
+          )}
+
+        
+        {(viewRequest && selectedRequest?.requestTypeId === 5) && (
+            <RequestModal size="xxl" title="Disburse Details" onClose={closeModal}>
+                <ViewApprovalDisburse mainRequest = {selectedRequest} onClose={closeModal} />
+            </RequestModal>
+          )}
+
+          {(viewRequest && (selectedRequest?.requestTypeId === 6 || selectedRequest?.requestTypeId === 7)) &&(
+              <RequestModal size="lg" nested title="Cash Count Sheet" onClose={closeModal}>
+                <TravelSummaryModal
+                  onClose={closeModal}
+                  mainRequest={selectedRequest} 
+                />
+              </RequestModal>
+          )}
+
+
+
+
       </div>
+
         )
 }
 

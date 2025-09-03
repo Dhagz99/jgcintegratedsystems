@@ -42,7 +42,6 @@ export default function ViewTravelOrder({requestType,formData,onClose,onReset}: 
 
 
 
-
       return (
         <div className="py-1 px-2 max-h-[70vh] overflow-y-auto">
         <div className="flex flex-col p-10">
@@ -53,21 +52,19 @@ export default function ViewTravelOrder({requestType,formData,onClose,onReset}: 
             </h1>
           </div>
       
-          <div className="self-end pr-4 sm:pr-6 md:pr-20 mt-4 sm:mt-6">
-            <span className="font-bold">DATE: </span>
+          <div className="self-end mb-5 mt-10 mr-23">
+            <span className="font-bold">Date: </span>
             {formatLongDate(current_date)}
           </div>
       
           <div className="mt-4 sm:mt-6">
-            <h5 className="text-center font-black text-xl sm:text-lg underline">
-              TRAVEL ORDER
-            </h5>
+            <h5 className="text-center font-black text-2xl">TRAVEL ORDER</h5>
           </div>
       
           {/* Wrapper that controls alignment */}
           <div className="max-w-3xl w-full mx-auto mt-6 px-20">
             {/* Two Columns */}
-            <div className="flex flex-col sm:flex-row gap-x-4">
+            <div className="flex flex-col sm:flex-row gap-x-4 border-gray-500 border-b pb-4 border-t pt-4">
               {/* Left column */}
               <div className="font-bold space-y-2 w-full sm:w-56">
                 <h2>NAME:</h2>
@@ -96,9 +93,9 @@ export default function ViewTravelOrder({requestType,formData,onClose,onReset}: 
                   <span className="whitespace-nowrap">{entry.amount}</span>
                 </div>
               ))}
-              <div className="flex justify-between mt-4 font-extrabold">
+              <div className="flex justify-between mt-4 font-extrabold border-b pb-4">
                 <span>TOTAL</span>
-                <span className="whitespace-nowrap">{totalAmount.toFixed(2)}</span>
+                <span className="whitespace-nowrap">Php  {totalAmount.toFixed(2)}</span>
               </div>
             </div>
 

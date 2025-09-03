@@ -85,7 +85,7 @@ export default function PreviewMonitorRequest ( {mainRequest} : dataProps){
       const badgeLabel = mainRequest?.status ?? "UNKNOWN";
     
         return(
-       <div className="flex flex-col justify-between p-2.5 w-full   md:w-[60%] border border-[#D5D5D5] gap-3 rounded-md">
+       <div className="flex flex-col max-w-100 justify-between p-2.5  border border-[#D5D5D5] gap-3 rounded-md">
                 <div className="flex flex-col gap-2">
                     <div className="flex justify-between">
                           <div className="">
@@ -96,6 +96,7 @@ export default function PreviewMonitorRequest ( {mainRequest} : dataProps){
                              <BadgeComponent type ={badgeType} label ={badgeLabel}/>
                           </div>
                     </div> 
+                    
                     <TransferRequestBar mainRequest={mainRequest}/>
                     <h5>{mainRequest?.requestFrom.branchName ?? ""}</h5>
                     <div className=" flex bg-gray-400 w-full min-h-70 p-4 cursor-pointer ">
@@ -127,7 +128,6 @@ export default function PreviewMonitorRequest ( {mainRequest} : dataProps){
                                           onClick={(e)=>handleRejectRequest()}
                                         />
                       </div>
-
                        {(viewRequest && mainRequest?.requestTypeId === 1) &&(
                                   <RequestModal size="lg" title="Fund Transfer Details" onClose={closeModal} >
                                        <ViewFundTransferAction mainRequest = {mainRequest} onClose={closeModal} />

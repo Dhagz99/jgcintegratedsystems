@@ -131,7 +131,7 @@ export default function TransferRequestBar({ mainRequest }: DataProps) {
 
   return (
   
-    <div className="relative w-full">
+    <div className="relative w-full ">
       {/* Left Arrow */}
       <button
         aria-label="Scroll left"
@@ -144,7 +144,7 @@ export default function TransferRequestBar({ mainRequest }: DataProps) {
       {/* Steps */}
       <div
         ref={scrollRef}
-        className="flex items-center space-x-4 overflow-x-auto w-full max-w-[80rem] mx-auto px-8 py-2"
+        className="flex items-center space-x-4  overflow-x-hidden w-full max-w-[35rem] mx-auto px-8 py-2"
       >
         {stepsWithDates.map((step, index) => {
           const isCompleted = step.id < progress.currentStep + lastTracker;

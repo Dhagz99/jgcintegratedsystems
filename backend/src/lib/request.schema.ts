@@ -11,7 +11,7 @@ export const requestTypeSchema = z.object({
 })
 
 
-const RoleEnum = z.enum(["Admin", "User", "Branch", "Superadmin"]);
+const RoleEnum = z.enum(["Admin", "User", "Branch", "Superadmin", "Coordinator"]);
 
 
 export const registerSchema = z.object({

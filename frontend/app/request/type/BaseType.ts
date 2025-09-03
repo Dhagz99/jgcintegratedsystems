@@ -29,6 +29,7 @@ export type ApproverRole = {
       approvalId: number;
       checkerType: number;
       approverId: number;
+      action: string;
       createdAt: string;
       updateAt: string;
   }

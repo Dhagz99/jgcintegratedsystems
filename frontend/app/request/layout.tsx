@@ -33,7 +33,7 @@ export default function RequestMainLayout({
             </div>
                 <div className="flex flex-col w-full py-2 pr-2">
                     <RequestHeader />
-                    <div className="h-full p-1 flex flex-col overflow-auto max-h-[40rem]">
+                    <div className="h-full p-1 flex flex-col overflow-auto ">
                         {children}
                     </div>
                 </div>

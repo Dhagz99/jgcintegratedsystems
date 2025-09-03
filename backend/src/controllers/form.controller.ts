@@ -176,6 +176,9 @@ type MainRequestWithRelations = Prisma.MainRequestGetPayload<{
     referenceCode: true,
     fundTransfer: true;
     approval: true;
+    proposedBudget:true;
+    transmittalMemo:true;
+    disburse:true;
     requestFrom: true;
     travelOrder: true;
     requestType: {
@@ -187,6 +190,12 @@ type MainRequestWithRelations = Prisma.MainRequestGetPayload<{
         recomApproval2: true;
         approveBy: true;
       };
+    };
+    countSheet: {
+      include: {
+        TravelCountSheet:  true;
+        CashCountSheet: true;
+      }
     };
     requestBy: { select: { id: true; name: true } };
   };
@@ -215,8 +224,9 @@ function hasUserWithStatus(
   const type = req.requestType;
   // console.log("approval", approval)
   // console.log("type", type);
+  if(userId === req.requestById) return true;
   const sequenceNumber = FindRequestSequence(type, userId);
-  if(sequenceNumber === null) return false
+  if(sequenceNumber === null) return false;
   // console.log("sequence", APPROVAL_FLOW[sequenceNumber]);
   // console.log("no sequence", sequenceNumber);
   const sequenceNumber1 = RequestSequenceChecker(sequenceNumber, approval, status);
@@ -242,6 +252,9 @@ export const getRequestsByUserStatus = async (req: AuthRequest, res: Response) =
     // --- Fetch all requests (could optimize further w/ Prisma filtering) ---
     const requests: MainRequestWithRelations[] = await prisma.mainRequest.findMany({ 
       where: {
+        OR: [
+          { requestById: userId }, // ✅ top-level condition
+          {
             requestType: {
               OR: [
                 { notedBy: { id: userId } },
@@ -253,14 +266,34 @@ export const getRequestsByUserStatus = async (req: AuthRequest, res: Response) =
               ],
             },
           },
+          ],
+          },
       
       include: {
+       
+        proposedBudget:true,
+        disburse:{
+          include:{
+            requestTo:{select:{name:true,position:true}}
+          }
+        },
+        transmittalMemo:{
+          include:{
+            requestTo:{select:{name:true,position:true}}
+          }
+        },
         fundTransfer: {
           include: {
             requestTo: 
              {select: {name: true, position: true}},
           }
         },
+        countSheet: {
+          include: {
+            TravelCountSheet:  true,
+            CashCountSheet:true,
+          }
+      },
         approval: {
           include: {
             requestLogs: true
@@ -451,15 +484,14 @@ const io = req.app.get("io");
             content: "Request was approved",
           });
         }else{
-          io.to(`user_${nextApproverId}`).emit("new_request", {
+          io.emit("new_request", {
             receiverId: nextApproverId,
             requestId: request.id,
+            requestedBy: request.requestById,
             content: request.requestType?.requestName,
           });
           console.log(`sending to user_${nextApproverId}`);
-         
         }
-
     } else {
       console.log("no sender");
     }
@@ -474,6 +506,20 @@ const io = req.app.get("io");
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 export const saveTravelOrderForm = async (req: AuthRequest, res: Response) => {
@@ -512,6 +558,7 @@ export const saveTravelOrderForm = async (req: AuthRequest, res: Response) => {
         recomApproval: { select: { id: true } },
         recomApproval2: { select: { id: true } },
         approveBy: { select: { id: true } },
+        requestName: true,
       },
     });
 
@@ -525,6 +572,7 @@ export const saveTravelOrderForm = async (req: AuthRequest, res: Response) => {
       requestType: { connect: { id: Number(requestTypeId) } },
       requestBy: { connect: { id: userId } },
       remarks: "travel_order",
+      referenceCode: "temp",
       travelOrder: {
         create: {
           name: name || "Unknown",
@@ -545,10 +593,18 @@ export const saveTravelOrderForm = async (req: AuthRequest, res: Response) => {
           recomApproval: reqType.recomApproval?.id ? "PENDING" : "EMPTY",
           recomApproval2: reqType.recomApproval2?.id ? "PENDING" : "EMPTY",
           approveBy: reqType.approveBy?.id ? "PENDING" : "EMPTY",
+          requestLogs: {
+            create: {
+              approverId: userId, 
+              checkerType: reqType.requestName,
+              action: "Submit Request",
+          }
+        }
         },
       },
     };
 
+    
 
     if (requestFromId && !isNaN(Number(requestFromId))) {
       createData.requestFrom = { connect: { id: Number(requestFromId) } };
@@ -558,6 +614,15 @@ export const saveTravelOrderForm = async (req: AuthRequest, res: Response) => {
       data: createData,
       include: { travelOrder: true, approval: true },
     });
+
+       // Step 2: Generate proper reference code
+       const referenceCode = formatRefId(created.id, "REF", 6);
+       // Step 3: Update the record
+       const updateRefCOde = await prisma.mainRequest.update({
+         where: { id: created.id },
+         data: { referenceCode: referenceCode },
+       });
+ 
 
     res.status(201).json({ message: "successfully added", created });
   } catch (error) {
@@ -572,3 +637,394 @@ export const saveTravelOrderForm = async (req: AuthRequest, res: Response) => {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+export const saveProposeBudgetForm = async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = toNum(req.user?.id);
+    if (!userId) return res.status(401).json({ message: "Unauthorized" });
+
+    const normalizeDecimal = (val: any) =>
+      val === "" || val === undefined ? null : val;
+
+    const {items, requestTypeId: rootTypeId, requestFromId } = req.body ?? {};
+
+
+    const requestTypeId = rootTypeId ?? items?.[0]?.requestTypeId;
+
+    if (!requestTypeId) {
+      return res.status(400).json({ message: "Missing requestTypeId" });
+    }
+
+   
+    const incomingItems: any[] = Array.isArray(items)
+      ? items
+      : req.body && (req.body.description || req.body.expense_type || req.body.month_of)
+      ? [req.body]
+      : [];
+
+    if (incomingItems.length === 0) {
+      return res.status(400).json({
+        message: "items (array) is required or send a single item body",
+      });
+    }
+
+    
+    const reqType = await prisma.requestType.findUnique({
+      where: { id: Number(requestTypeId) },
+      select: {
+        notedBy: { select: { id: true } },
+        checkedBy: { select: { id: true } },
+        checkedBy2: { select: { id: true } },
+        recomApproval: { select: { id: true } },
+        recomApproval2: { select: { id: true } },
+        approveBy: { select: { id: true } },
+        requestName: true,
+
+      },
+    });
+
+    if (!reqType) {
+      return res.status(404).json({ message: "RequestType not found" });
+    }
+
+
+    const createData: any = {
+      requestDate: new Date(),
+      requestType: { connect: { id: Number(requestTypeId) } },
+      requestBy: { connect: { id: userId } },
+      remarks: "proposed_budget",
+      referenceCode:"temp",
+      approval: {
+        create: {
+          notedBy: reqType.notedBy?.id ? "PENDING" : "EMPTY",
+          checkedBy: reqType.checkedBy?.id ? "PENDING" : "EMPTY",
+          checkedBy2: reqType.checkedBy2?.id ? "PENDING" : "EMPTY",
+          recomApproval: reqType.recomApproval?.id ? "PENDING" : "EMPTY",
+          recomApproval2: reqType.recomApproval2?.id ? "PENDING" : "EMPTY",
+          approveBy: reqType.approveBy?.id ? "PENDING" : "EMPTY",
+          requestLogs: {
+            create: {
+              approverId: userId, 
+              checkerType: reqType.requestName,
+              action: "Submit Request",
+          }
+        } 
+        },
+      },
+      proposedBudget: {
+        create: incomingItems.map((it) => ({
+          description: it?.description ?? null,
+          budget: normalizeDecimal(it?.budget),
+          total_expenses: normalizeDecimal(it?.total_expenses),
+          variance: normalizeDecimal(it?.variance),
+          proposed_budget: normalizeDecimal(it?.proposed_budget),
+          remarks: it?.remarks ?? null,
+          expense_type: it?.expense_type ?? null,
+          month_of: it?.month_of ?? null,
+        })),
+      },
+    };
+
+
+    if (requestFromId && !isNaN(Number(requestFromId))) {
+      createData.requestFrom = { connect: { id: Number(requestFromId) } };
+    }
+
+
+    const created = await prisma.mainRequest.create({
+      data: createData,
+      include: { proposedBudget: true, approval: true },
+    });
+
+    const referenceCode = formatRefId(created.id, "REF", 6);
+   
+    const updateRefCOde = await prisma.mainRequest.update({
+      where: { id: created.id },
+      data: { referenceCode: referenceCode },
+    });
+
+
+    const io = req.app.get("io");
+    const nextApproverId = findNextApprover(reqType, created.approval[0]); 
+
+    if (nextApproverId) {
+      console.log(`🔔 Emitting new_request to user_${nextApproverId}`);
+      io.to(`user_${nextApproverId}`).emit("new_request", {
+        receiverId: nextApproverId,
+        requestId: created.id,
+        content: 'proposed',
+      });
+      console.log(`sending to user_${nextApproverId}`);
+    } else {
+      console.log("no sender");
+    }
+
+
+    res.status(201).json({ message: "successfully added", created });
+  } catch (err) {
+    console.error("saveProposeBudgetForm error:", err);
+    res.status(500).json({ message: "error occurred" });
+  }
+
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+export const saveTransmittalMemo = async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = toNum(req.user?.id);
+
+    if (!userId) return res.status(401).json({ message: "Unauthorized" });
+
+    const { toId, from, date,description,items,note,requestTypeId,requestFromId } = req.body ?? {};
+
+    if (!requestTypeId) {
+      return res.status(400).json({ message: "Missing requestTypeId" });
+    }
+
+    const branch = await prisma.branch.findUnique({
+      where: { id: Number(from) },
+      select: { branchName: true },
+    });
+
+    const reqType = await prisma.requestType.findUnique({
+      where: { id: Number(requestTypeId) },
+      select: {
+        notedBy: { select: { id: true } },
+        checkedBy: { select: { id: true } },
+        checkedBy2: { select: { id: true } },
+        recomApproval: { select: { id: true } },
+        recomApproval2: { select: { id: true } },
+        approveBy: { select: { id: true } },
+        requestName: true,
+      },
+    });
+
+    if (!reqType) {
+      return res.status(404).json({ message: "RequestType not found" });
+    }
+
+
+    const createData: any = {
+      requestDate: date ? new Date(date) : new Date(),
+      requestType: { connect: { id: Number(requestTypeId) } },
+      requestBy: { connect: { id: userId } },
+      remarks: "transmittal_memo",
+      requestFrom: { connect: { id: Number(from) } },
+      referenceCode:"temp",
+      transmittalMemo: {
+        create: {
+          to_id: toId,
+          from: branch?.branchName ?? "",
+          date: date ? new Date(date) : new Date(),
+          description: description || null,
+          note: note || null,
+          items: Array.isArray(items) ? items : [],
+        },
+      },
+      approval: {
+        create: {
+          notedBy: reqType.notedBy?.id ? "PENDING" : "EMPTY",
+          checkedBy: reqType.checkedBy?.id ? "PENDING" : "EMPTY",
+          checkedBy2: reqType.checkedBy2?.id ? "PENDING" : "EMPTY",
+          recomApproval: reqType.recomApproval?.id ? "PENDING" : "EMPTY",
+          recomApproval2: reqType.recomApproval2?.id ? "PENDING" : "EMPTY",
+          approveBy: reqType.approveBy?.id ? "PENDING" : "EMPTY",
+          requestLogs: {
+            create: {
+              approverId: userId, 
+              checkerType: reqType.requestName,
+              action: "Submit Request",
+          }
+        } 
+        },
+
+      },
+    };
+
+   
+
+    const created = await prisma.mainRequest.create({
+      data: createData,
+      include: { transmittalMemo: true, approval: true },
+    });
+
+    const referenceCode = formatRefId(created.id, "REF", 6);
+   
+    const updateRefCOde = await prisma.mainRequest.update({
+      where: { id: created.id },
+      data: { referenceCode: referenceCode },
+    });
+
+
+    const io = req.app.get("io");
+    const nextApproverId = findNextApprover(reqType, created.approval[0]); 
+
+    if (nextApproverId) {
+      console.log(`🔔 Emitting new_request to user_${nextApproverId}`);
+      io.to(`user_${nextApproverId}`).emit("new_request", {
+        receiverId: nextApproverId,
+        requestId: created.id,
+        content: created.transmittalMemo?.to_id,
+      });
+      console.log(`sending to user_${nextApproverId}`);
+    } else {
+      console.log("no sender");
+    }
+
+
+    res.status(201).json({ message: "successfully added", created });
+  } catch (error) {
+    console.error("saveTravelOrderForm error:", error);
+    res.status(500).json({ message: "error occurred" });
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+export const saveDisburse = async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = toNum(req.user?.id);
+
+    if (!userId) return res.status(401).json({ message: "Unauthorized" });
+
+    const { toId, fromName,subject,date,description,note,total_amount,requestTypeId,requestFromId,items } = req.body ?? {};
+
+    if (!requestTypeId) {
+      return res.status(400).json({ message: "Missing requestTypeId" });
+    }
+
+
+    const reqType = await prisma.requestType.findUnique({
+      where: { id: Number(requestTypeId) },
+      select: {
+        notedBy: { select: { id: true } },
+        checkedBy: { select: { id: true } },
+        checkedBy2: { select: { id: true } },
+        recomApproval: { select: { id: true } },
+        recomApproval2: { select: { id: true } },
+        approveBy: { select: { id: true } },
+        requestName: true,
+      },
+    });
+
+    if (!reqType) {
+      return res.status(404).json({ message: "RequestType not found" });
+    }
+
+
+    const createData: any = {
+      requestDate: date ? new Date(date) : new Date(),
+      requestType: { connect: { id: Number(requestTypeId) } },
+      requestBy: { connect: { id: userId } },
+      remarks: "disburse",
+      referenceCode:"temp",
+      disburse: {
+        create: {
+          to_id: toId,
+          from: fromName,
+          subject:subject,
+          date: date ? new Date(date) : new Date(),
+          description: description || null,
+          note: note || null,
+          total_amount:total_amount || null,
+          items: items ?? [],
+        },
+      },
+      approval: {
+        create: {
+          notedBy: reqType.notedBy?.id ? "PENDING" : "EMPTY",
+          checkedBy: reqType.checkedBy?.id ? "PENDING" : "EMPTY",
+          checkedBy2: reqType.checkedBy2?.id ? "PENDING" : "EMPTY",
+          recomApproval: reqType.recomApproval?.id ? "PENDING" : "EMPTY",
+          recomApproval2: reqType.recomApproval2?.id ? "PENDING" : "EMPTY",
+          approveBy: reqType.approveBy?.id ? "PENDING" : "EMPTY",
+          requestLogs: {
+            create: {
+              approverId: userId, 
+              checkerType: reqType.requestName,
+              action: "Submit Request",
+          }
+        } 
+        },
+      },
+    };
+
+
+
+    if (requestFromId && !isNaN(Number(requestFromId))) {
+      createData.requestFrom = { connect: { id: Number(requestFromId) } };
+    }
+
+    const created = await prisma.mainRequest.create({
+      data: createData,
+      include: { disburse: true, approval: true },
+    });
+
+    const referenceCode = formatRefId(created.id, "REF", 6);
+   
+    await prisma.mainRequest.update({
+      where: { id: created.id },
+      data: { referenceCode: referenceCode },
+    });
+
+
+    const io = req.app.get("io");
+    const nextApproverId = findNextApprover(reqType, created.approval[0]); 
+
+    if (nextApproverId) {
+      console.log(`🔔 Emitting new_request to user_${nextApproverId}`);
+      io.to(`user_${nextApproverId}`).emit("new_request", {
+        receiverId: nextApproverId,
+        requestId: created.id,
+        content: created.disburse?.to_id,
+      });
+      console.log(`sending to user_${nextApproverId}`);
+    } else {
+      console.log("no sender");
+    }
+
+
+    res.status(201).json({ message: "successfully added", created });
+  } catch (error) {
+    console.error("saveTravelOrderForm error:", error);
+    res.status(500).json({ message: "error occurred" });
+  }
+
+};
