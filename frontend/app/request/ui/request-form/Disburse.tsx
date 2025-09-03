@@ -345,12 +345,13 @@ export default function Disburse({requestTypeId, requestType}:FormProps){
 
             
                 {isModalOpen && (
-                <RequestModal title="Disburse Summary" size="xl" onClose={() => setIsModalOpen(false)}>
+                <RequestModal title="Disburse Summary" size="lg" onClose={() => setIsModalOpen(false)}>
                 <ViewDisburse
                     formData={{ ...formData,
-                        companyName: myBranch?.companyName ?? "",  
-                        address: myBranch?.address ?? "",  
-                        telephone:myBranch?.telephone ?? "",
+                        companyName: branches?.find(b => b.id === formData.fromId)?.companyName ?? "",   
+                        telephone: branches?.find(b => b.id === formData.fromId)?.telephone ?? "",
+                        branchName: branches?.find(b => b.id === formData.fromId)?.branchName ?? "",
+                        address: branches?.find(b => b.id === formData.fromId)?.address ?? "",
                     }}
                     categories={categories}
                     onClose={() => setIsModalOpen(false)}

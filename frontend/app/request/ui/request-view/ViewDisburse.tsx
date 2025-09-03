@@ -60,8 +60,8 @@ import { formatLongDate } from "@/app/utils/DateFormatter";
         </div>
 
         <div className="border-t-2 border-gray-500 border-b-2">
-            <div className="flex mt-2">
-                <div><span className="font-semibold pr-10">To: </span>{formData.toName}<br></br><span className="pl-16">{formData.toPosition}</span> </div>
+            <div className="flex mt-4">
+                <div><span className="font-semibold pr-10">To: </span>{formData.toName}<br></br><span className="pl-15">{formData.toPosition}</span> </div>
             </div>
 
             <div className="flex mt-2">
@@ -72,7 +72,7 @@ import { formatLongDate } from "@/app/utils/DateFormatter";
                 <div><span className="font-semibold pr-3">Subject: </span>{formData.subject}</div>
             </div>
 
-            <div className="flex mt-2 mb-2">
+            <div className="flex mt-2 mb-4">
                 <div><span className="font-semibold pr-7">Date: </span>{formatLongDate(formData.date)}</div>
             </div>
 
@@ -264,10 +264,8 @@ import { formatLongDate } from "@/app/utils/DateFormatter";
                         )}
                         <div className="space-y-1">
                             {item.budgets.map((budget) => (
-                            <div
-                                key={`${item.id}-${budget.id}`}
-                                className="flex justify-between"
-                            >
+                            <div key={`${item.id}-${budget.id}`}
+                                className="flex justify-between">
                                 <span className="flex-1">{budget.budgetName}</span>
                                 <span className="w-16 text-right">{budget.amount}</span>
                             </div>

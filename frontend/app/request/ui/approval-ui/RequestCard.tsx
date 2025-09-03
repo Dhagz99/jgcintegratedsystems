@@ -13,6 +13,7 @@ import { ViewApprovalTravelOrder } from "../request-view/ViewTravelOrder";
 import { ViewApprovalProposedBudget } from "../request-view/ViewProposedBudget";
 import  { ViewApprovalTransmittalMemo } from "../request-view/ViewTransmittalMemo";
 import { ViewApprovalDisburse } from "../request-view/ViewDisburse";
+import TravelSummaryModal from "../forms/TravelSumModal";
 
 
 
@@ -186,6 +187,15 @@ export default function RequestCard( {requests, status ="PENDING"} : DataProps){
           )}
 
 
+{/* Fund Replenishment */}
+        {(viewRequest && (selectedRequest?.requestTypeId === 3 || selectedRequest?.requestTypeId === 4)) &&(
+                  <RequestModal size="lg" nested title="Cash Count Sheet" onClose={closeModal}>
+                    <TravelSummaryModal
+                      onClose={closeModal}
+                      mainRequest={selectedRequest} 
+                    />
+                  </RequestModal>
+                )}
 
 
 

@@ -9,6 +9,7 @@ import TravelOrder from '../ui/request-form/TravelOrder';
 import ProposedBudget from '../ui/request-form/ProposedBudget';
 import TransmittalMemoPage from '../ui/request-form/TransmittalMemo';
 import Disburse from '../ui/request-form/Disburse';
+import FundReplenishment from '../ui/request-form/FundReplenishment';
 
 
 export default function SubmitForm() {
@@ -78,6 +79,10 @@ export default function SubmitForm() {
         {requestTypeId === 6 && (
           <Disburse requestTypeId={requestTypeId} requestType={selectedType}/>
         )}
+
+      {(requestTypeId === 7 || requestTypeId === 8) && (
+              <FundReplenishment requestTypeId={requestTypeId} requestType={selectedType} />
+            )}
 
 
         

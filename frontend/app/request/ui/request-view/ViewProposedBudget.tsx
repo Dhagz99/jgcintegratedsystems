@@ -101,20 +101,20 @@ export default function ViewProposedBudget({requestType,formData,onClose,onReset
         <div className="font-bold">
           <div>
        
-            <h2> {branchName} BRANCH</h2>
+            <h2 className="font-extrabold"> {branchName} BRANCH</h2>
   
           </div>
           <div>
-            <h2>PROPOSED BUDGET</h2>
+            <h2 className="font-bold">PROPOSED BUDGET</h2>
           </div>
           <div>
-            <h2>FOR THE MONTH {formattedMonth}</h2>
+            <h2 className="font-bold">FOR THE MONTH {formattedMonth}</h2>
           </div>
         </div>
 
       </div>
 
-      <table className="w-full border border-gray-300 text-sm">
+      <table className="w-full text-sm">
         <thead className="bg-gray-100">
           <tr className="text-center">
             <th className="border px-2 py-1"></th>
@@ -186,11 +186,11 @@ export default function ViewProposedBudget({requestType,formData,onClose,onReset
           })}
 
           <tr className="text-center font-bold">
-            <td className="text-left">TOTAL EXPENSES</td>
-            <td className="border-b-4 border-double text-right">{fmt(grandTotals.budget)}</td>
-            <td className="border-b-4 border-double text-right">{fmt(grandTotals.totalExpenses)}</td>
-            <td className="border-b-4 border-double text-right">{fmt(grandTotals.variance)}</td>
-            <td className="border-b-4 border-double text-right">{fmt(grandTotals.proposedBudget)}</td>
+            <td className="text-left py-1 px-2">TOTAL EXPENSES</td>
+            <td className="border-b text-right">{fmt(grandTotals.budget)}</td>
+            <td className="border-b text-right">{fmt(grandTotals.totalExpenses)}</td>
+            <td className="border-b text-right">{fmt(grandTotals.variance)}</td>
+            <td className="border-b text-right">{fmt(grandTotals.proposedBudget)}</td>
             <td></td>
           </tr>
         </tbody>
@@ -238,7 +238,7 @@ export default function ViewProposedBudget({requestType,formData,onClose,onReset
         <button className={`bg-green-800 hover:bg-green-700 flex justify-end float-right py-1 text-white px-8 rounded ${isPending ? "opacity-50 cursor-not-allowed" : ""}`}
           onClick={handleConfirmSubmit}
           disabled={isPending}>
-          {isPending ? "Submitting..." : "Submit"}
+          {isPending ? "Submitting..." : "Confirm Save"}
         </button>
         {submissionStatus === "error" && (
           <p className="text-red-600 mt-2">

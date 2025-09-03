@@ -34,19 +34,19 @@ export default function ViewTransmittalMemo({ formData, items,requestType,onClos
       <div className="max-h-[70vh] overflow-y-auto px-20 py-8">
         {/* HEADER */}
         <div className="text-center">
-          <h2 className="text-xl font-extrabold">EMB CAPITAL LENDING CORPORATION</h2>
+          <h2 className="text-xl font-extrabold">{formData.companyName?.toLocaleUpperCase()}</h2>
           <h2 className="text-lg font-bold">{formData.branchName} BRANCH</h2>
           <h2 className="text-lg font-bold">{formData.address}</h2>
         </div>
   
         <div className="text-center mt-10 ">
-          <h3 className="font-bold text-lg">TRANSMITTAL MEMO</h3>
+          <h3 className="font-black text-2xl">TRANSMITTAL MEMO</h3>
         </div>
   
-        <div className="w-5/12 mt-8 space-y-2 ml-22 ">
+        <div className="w-9/12 mt-8 space-y-2 ml-22 border-b border-t py-4">
           <div>
             <span className="font-bold mr-13">TO: </span>
-            <span className="font-semibold">{formData.toName}</span>
+            <span className="font-semibold">{formData.toName}<br></br><h2 className="ml-19.5">{formData.toPosition}</h2></span>
           </div>
           <div>
             <span className="font-bold mr-8">FROM:</span>

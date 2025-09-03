@@ -206,7 +206,7 @@ const handleResetForm = () => {
 
 
             {isModalOpen && (
-                <RequestModal title="Transmittal Memo Summary" size="xxl" onClose={() => setIsModalOpen(false)}>
+                <RequestModal title="Transmittal Memo Summary" size="xl" onClose={() => setIsModalOpen(false)}>
                 <ViewTransmittalMemo 
                   formData={{...formData,
                     fromName: branches?.find(b => b.id === formData.from)?.branchName ?? "",
@@ -214,6 +214,7 @@ const handleResetForm = () => {
                     requestedPosition: user?.position ?? "",
                     branchName: branches?.find(b => b.id === formData.from)?.branchName ?? "",
                     address: branches?.find(b => b.id === formData.from)?.address ?? "",
+                    companyName: branches?.find(b => b.id === formData.from)?.companyName ?? "",  
                     }}
                   items={items} requestType={requestType}  onClose={() => setIsModalOpen(false)}  onReset={handleResetForm} />
                 </RequestModal>

@@ -215,7 +215,7 @@ const handleAddAmount = (index: number, value: string) => {
       </form>
 
       {isModalOpen && (
-        <RequestModal title="TravelOrder Summary" size="xxxl" onClose={() => setIsModalOpen(false)}>
+        <RequestModal title="TravelOrder Summary" size="xl" onClose={() => setIsModalOpen(false)}>
          <ViewTravelOrder
             requestType={requestType}   
             formData={{...formValues,

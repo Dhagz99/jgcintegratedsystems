@@ -4,6 +4,7 @@ import { authenticate } from '../middleware/auth.middleware' // 👈 import midd
 import { addBranch, addRequestType, deleteBranch, fetchBranches, fetchListRequestTypes, updateBranch } from '../controllers/request.controller'
 import { actOnRequest, addFundTransfer, getRequestsByUserStatus, getRequestsForApprover,saveTravelOrderForm,saveProposeBudgetForm, saveTransmittalMemo, saveDisburse } from '../controllers/form.controller'
 import { upload } from '../middleware/upload.middleware'
+import { createFund } from '../controllers/fund.controller'
 
 const router = Router()
 router.post('/register', upload.single('signature'), register);
@@ -40,6 +41,11 @@ router.post('/add-travel-form',authenticate,saveTravelOrderForm);
 router.post('/add-proposed-budget',authenticate,saveProposeBudgetForm);
 router.post('/add-transmittal-memo',authenticate,saveTransmittalMemo);
 router.post('/add-disburse',authenticate,saveDisburse);
+
+
+
+//CountSheet
+router.post('/request/add-count-sheet', authenticate, createFund);
 
 
 export default router

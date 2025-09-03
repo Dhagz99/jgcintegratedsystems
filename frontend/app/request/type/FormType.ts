@@ -93,6 +93,8 @@ export interface FormDataDisburse {
     requestFromId?: number;
     items?: Category[]; 
     requestTo?: Users | null;
+    branchName?:string;
+    
 }
 
 export interface DisbursePaperProps {
@@ -122,6 +124,8 @@ export interface TransmittalData{
     requestTypeId?:number;
     requestFromId?:number;
     requestTo?: Users | null;
+    companyName?:string;
+    toPosition?:string;
 }   
 
 

@@ -1,5 +1,6 @@
 import { Approval, ApproverRole, FundTransfer } from "./BaseType";
 import { TravelOrderPaperProps,AddProposedBudgetPayload,TransmittalData,FormDataDisburse } from "./FormType";
+import { countSheet, TravelCountSheet,CashCountSheet } from "./Fundtype";
 
  export type Option = { value: number | string; label: string };
 
@@ -103,6 +104,7 @@ export type CheckerWithName = Checker & {
     travelOrder:TravelOrderPaperProps;
     proposedBudget:AddProposedBudgetPayload;
     transmittalMemo:TransmittalData;
+    countSheet:countSheet;
     disburse:FormDataDisburse;
     approval: Approval[];
     requestFrom: RequestFrom;

@@ -169,6 +169,7 @@ model MainRequest {
   transmittalMemo formTransmittalMemo? @relation("formTransmittalMemo")
   proposedBudget formProposedBudget[]
   disburse formDisburse? @relation("formDisburse")
+  countSheet   CountSheet?   @relation("Main_CountSheet")
 
 
   @@map("main_request")
@@ -320,3 +321,75 @@ model formDisburse {
 
 
 
+// Fund Replenishments
+
+
+
+model CountSheet {
+  id         Int     @id @default(autoincrement())
+  fundType   String  @map("fund_type")
+  mainFormId Int? @unique @map("main_form_id")
+  office     String  @map("office_name")
+  dateCount  DateTime @map("date_count")
+  fundName   String  @map("fund_name")
+  fundAmount Decimal @db.Decimal(10,2)
+  reference  String?
+  cashDemo   Json?   
+  repFund    Decimal @db.Decimal(10,2)
+  totalFund  Decimal @db.Decimal(10,2)
+  cashShort  Decimal? @db.Decimal(10,2)
+
+
+  MaincountSheet MainRequest? @relation("Main_CountSheet", fields: [mainFormId], references: [id], onDelete:Cascade)
+
+  // relations
+  CashCountSheet   CashFund[]   @relation("CashFund_CountSheet")
+  TravelCountSheet TravelFund[] @relation("TravelFund_CountSheet")
+
+  @@index([mainFormId])
+}
+
+
+
+
+// Travel and Cash funding and Cash Sheet Model
+
+model CashFund {
+  id        Int      @id @default(autoincrement())
+  countId   Int?     @map("count_sheet_id")
+  startDate DateTime @map("start_date")
+  endDate   DateTime @map("end_date")
+  reqDate   DateTime @map("req_date")
+  payee     String   @map("payee_name")
+  remarks   String?
+  fundAmount Decimal  @db.Decimal(10,2)
+  miscExp    Decimal? @db.Decimal(10,2)
+  billFee    Decimal? @db.Decimal(10,2) 
+  telFee     Decimal? @db.Decimal(10,2)
+  dueMh      Decimal? @db.Decimal(10,2)
+
+  // fk
+  CashSheet CountSheet? @relation("CashFund_CountSheet", fields: [countId], references: [id], onDelete: Cascade)
+  @@index([countId])
+}
+
+
+model TravelFund {
+  id         Int      @id @default(autoincrement())
+  countId    Int?     @map("count_sheet_id")
+  tagsField     String[] @default([])
+  startDate  DateTime @map("start_date")
+  endDate    DateTime @map("end_date")
+  reqDate    DateTime @map("req_date")
+  travelling String?  @db.VarChar(255)
+  fuel       Decimal? @db.Decimal(10,2)
+  repair     String[] @default([])
+  litigation Decimal? @db.Decimal(10,2)
+  totalFee   Decimal  @db.Decimal(10,2)
+  kilometer  String?  @map("km_value")
+  remarks    String?
+
+  // fk
+  TravelSheet CountSheet? @relation("TravelFund_CountSheet", fields: [countId], references: [id], onDelete:Cascade)
+  @@index([countId])
+}
