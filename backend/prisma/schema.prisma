@@ -208,7 +208,7 @@ model ApprovalTable {
   createdAt  DateTime @default(now()) @map("created_at")
   updateAt   DateTime @updatedAt      @map("update_at")
 
-  mainRequest MainRequest? @relation(fields: [mainFormId], references: [id], onDelete: SetNull)
+  mainRequest MainRequest? @relation(fields: [mainFormId], references: [id], onDelete: Cascade)
   
 
   requestLogs  RequestLogs[]
@@ -226,7 +226,7 @@ model RequestLogs {
   action String
   createdAt  DateTime @default(now()) @map("created_at")
 
-  approval ApprovalTable? @relation(fields: [approvalId], references: [id], onDelete: SetNull)
+  approval ApprovalTable? @relation(fields: [approvalId], references: [id], onDelete: Cascade)
   approver User? @relation(fields: [approverId], references: [id], onDelete: SetNull)
 
   @@index([approvalId])
