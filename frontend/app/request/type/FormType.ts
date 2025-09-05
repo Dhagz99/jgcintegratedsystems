@@ -128,6 +128,17 @@ export interface TransmittalData{
     toPosition?:string;
 }   
 
+export type FieldWeeklyProps = {
+  name: string;
+  date_covered: string;
+  particulars: { id: number; particular: string; amount: string }[];
+  checklists: {
+    id: number;
+    category: string;
+    items: { id: number; text: string }[];
+  }[];
+  images?: string[];
+};
 
 
 export interface TransmittalItem {
@@ -167,3 +178,11 @@ export type FormPropsProposedBudget = {
 
 
 
+export interface FormPropsFieldWeeklyTravelExpense {
+  formData?: FieldWeeklyProps;  
+  items?: TransmittalItem[];
+  requestType?: RequestTypeDTO | null;
+  mainRequest?: MainRequest | null;
+  onClose?: () => void;
+  onReset?: () => void;
+}

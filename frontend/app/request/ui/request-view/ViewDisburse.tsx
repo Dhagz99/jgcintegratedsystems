@@ -103,8 +103,7 @@ import { formatLongDate } from "@/app/utils/DateFormatter";
                         {category.budgets.map((budget) => (
                         <div
                             key={`${category.id}-${budget.id}`}
-                            className="flex justify-between"
-                        >
+                            className="flex justify-between">
                             <span className="flex-1">{budget.budgetName}</span>
                             <span className="w-16 text-right">{budget.amount}</span>
                         </div>

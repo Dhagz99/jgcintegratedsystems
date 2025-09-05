@@ -9,19 +9,7 @@ import { FormPropsTravelOrder } from "../../type/FormType";
 export default function ViewTravelOrder({requestType,formData,onClose,onReset}: FormPropsTravelOrder) {
     if (!formData) return null;
 
-    const {
-        name,
-        position,
-        departure_date,
-        current_date,
-        purpose_of_travel,
-        destination,
-        items,
-        onSubmit,
-        submitting,
-        branchName,
-        address,
-      } = formData;
+    const {name,position,departure_date,current_date,purpose_of_travel,destination,items,onSubmit,submitting,branchName,address} = formData;
     
 
     const totalAmount = items.reduce((sum, entry) => {
@@ -138,13 +126,13 @@ export default function ViewTravelOrder({requestType,formData,onClose,onReset}: 
 
 
           <div className="flex w-full justify-end mt-10 pr-10">
-          <button
-              onClick={handleConfirmSubmit}
-              disabled={submitting}
-              className="bg-green-800 hover:bg-green-950 text-white py-1 px-4 rounded disabled:opacity-60">
-              {submitting ? "Saving..." : "Submit"}
+            <button onClick={handleConfirmSubmit} disabled={submitting}
+                className="bg-green-800 hover:bg-green-950 text-white py-1 px-4 rounded disabled:opacity-60">
+                {submitting ? "Saving..." : "Submit"}
             </button>
           </div>
+
+
         </div>
       </div>
       );
