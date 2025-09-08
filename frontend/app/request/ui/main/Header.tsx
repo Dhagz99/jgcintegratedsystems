@@ -1,5 +1,5 @@
 'use client'
-import { ManageHistory, ManageHistoryOutlined, MenuOpen, Notifications, NotificationsOutlined, Person, PersonOutline, Search } from "@mui/icons-material";
+import { ManageHistory, MenuOpen, Notifications, Person } from "@mui/icons-material";
 // import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { LogsModal, NotificationModal, ProfileModal } from "./HeaderModal";
@@ -50,11 +50,11 @@ export default function RequestHeader() {
                <MenuOpen />
             </div>
             <div  className="flex gap-1.5  ">
-                         <div className={`w-9 h-9  ${active == 'search' ? menuActive : menuPassive}   rounded-full flex justify-center items-center cursor-pointer `}
+                         {/* <div className={`w-9 h-9  ${active == 'search' ? menuActive : menuPassive}   rounded-full flex justify-center items-center cursor-pointer `}
                            onClick={()=>handleSelect("search")}
                            > 
                                    <Search  style={iconStyle}/>
-                        </div>
+                        </div> */}
                         <div className={`w-9 h-9 ${active == 'logs' ? menuActive : menuPassive}  rounded-full flex justify-center items-center cursor-pointer `}
                            onClick={()=>handleSelect("logs")}
                         > 

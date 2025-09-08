@@ -1,7 +1,7 @@
-import { FieldError, FieldErrorsImpl, Merge, UseFormRegisterReturn } from "react-hook-form";
+import { FieldError, FieldValues, FieldErrorsImpl, Merge, UseFormRegisterReturn } from "react-hook-form";
 
 
-type FormError = FieldError | Merge<FieldError, FieldErrorsImpl<any>>;
+type FormError = FieldError | Merge<FieldError, FieldErrorsImpl<FieldValues>>;
 
 type FormInputProps = {
   label?: string;

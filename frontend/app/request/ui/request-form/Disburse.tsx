@@ -17,8 +17,8 @@ export default function Disburse({requestTypeId, requestType}:FormProps){
     const [categories, setCategories] = useState<Category[]>([]);
     const { data: users = [] } = useFetchUserList();
     const { data: user } = useFetchUser();
-    const { data: branches = [], isLoading, isError } = useFetchBranches();
-    const myBranch = branches.find(b => b.id === user?.branchId);
+    const { data: branches = []} = useFetchBranches();
+    // const myBranch = branches.find(b => b.id === user?.branchId);
 
 
     const [formData,setFormData] = useState({
@@ -280,7 +280,7 @@ export default function Disburse({requestTypeId, requestType}:FormProps){
                 </button>
               </div>
             </div>
-              {category.budgets.map((budget, index) => (
+              {category.budgets.map((budget) => (
                 <div key={budget.id} className="grid grid-cols-2 gap-4 mb-2 items-center">
                   <div className="flex flex-col">
                     <label className="mb-2" htmlFor={`budgetName-${category.id}-${budget.id}`}>Budget Name</label>

@@ -6,15 +6,14 @@ import { timeAgo } from "@/app/utils/timeAgo";
 
 
 export  function LogsModal() { 
-        const {data, isLoading} = useFetchUserLogs();
+        const {data} = useFetchUserLogs();
         return(
         <div className="absolute z-11 flex flex-col  justify-between bg-white min-h-75 w-75 top-14 right-3 rounded-xl shadow-[0_0_17px_0_rgba(0,0,0,0.1)]  p-3.5">
             <div className="flex flex-col gap-1 justify-between h-full">
                      <h6 className="font-bold text-md">Request Logs</h6>
                      <div className="flex justify-between">
                      <p className="text-sm font-semibold">Earlier</p>
-                     <p className="text-sm font-semibold text-[#32B695]">See all</p>
-
+                     {/* <p className="text-sm font-semibold text-[#32B695]">See all</p> */}
                      </div>
                         <div className="flex flex-col gap-1.5 max-h-45 overflow-auto">
                                 {data?.map((logs: RequestLogs) =>(
@@ -43,7 +42,7 @@ type ProfileProps = {
 
         export const ProfileModal: React.FC<ProfileProps> = ({ handleClickModal }) => {
                 const { mutate: logout } = useLogout();
-                const { data: user , isLoading: userLoading } = useFetchUser();
+                const { data: user } = useFetchUser();
                 return(
                         <div className="absolute z-11 flex flex-col  justify-between bg-white min-h-75 w-75 top-14 right-3 rounded-xl shadow-[0_0_17px_0_rgba(0,0,0,0.1)]  p-3.5">
                                 <div className="flex flex-col gap-1 justify-between h-full">

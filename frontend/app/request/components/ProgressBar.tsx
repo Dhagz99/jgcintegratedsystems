@@ -84,7 +84,7 @@ export default function TransferRequestBar({ mainRequest }: DataProps) {
   // 1. Build steps
   const steps = buildSteps(mainRequest?.requestType);
 
-  const logs = (mainRequest?.approval?.[0]?.requestLogs ?? []) as any[];
+  const logs = (mainRequest?.approval?.requestLogs ?? []) as any[];
   const stepsWithDates = attachLogsToSteps(steps, logs);
 
   console.log("result: ", stepsWithDates);

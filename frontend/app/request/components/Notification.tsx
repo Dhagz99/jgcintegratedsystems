@@ -1,5 +1,5 @@
 "use client";
-import { use, useEffect } from "react";
+import { useEffect } from "react";
 import socket from "../lib/socket";
 import { toast } from "react-hot-toast";
 import { useQueryClient } from "@tanstack/react-query";

@@ -2,21 +2,14 @@
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
-import {
-  branchSchema,
-  createBranchSchema,
-  updateBranchSchema,
-  type Branch,
-  type CreateBranchInput,
-  type UpdateBranchInput,
-}  from "../../lib/request.schema";
+
 import { useEffect, useMemo, useState } from "react";
 import { SaveAs, Close } from "@mui/icons-material";
 import ButtonComponents from "../../components/Buttons";
 import { FormsCheckBox, FormsInputs, FormsSelect } from "../../components/FormsInputs";
 import { showSuccess } from "../../components/ToastAlert";
-import { useAddBranch, useAddUser, useFetchBranches, useFetchChecker, useUpdateBranch } from "../../hooks/useRequest";
-import { CreateUser, createUserSchema, updateUserSchema } from "@/lib/schemas";
+import {  useAddUser, useFetchBranches, useUpdateBranch } from "../../hooks/useRequest";
+import { createUserSchema, updateUserSchema } from "@/lib/schemas";
 import SearchableInput from "../../components/SearchableInputs";
 import { PublicUserDTO } from "@/types/auth.type";
 import { Option1 } from "../../type/RequestType";

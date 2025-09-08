@@ -9,13 +9,13 @@ export type CashDemoItem = {
 
 export type countSheet = {
     id: number;
-    fundType:   String;
+    fundType:   string;
     mainFormId: number;
-    office:     String;
+    office:     string;
     dateCount:  Date;
-    fundName:   String;
+    fundName:   string;
     fundAmount: number;
-    reference:  String;
+    reference:  string;
     cashDemo:   CashDemoItem[]; 
     repFund:    number;
     totalFund:  number;

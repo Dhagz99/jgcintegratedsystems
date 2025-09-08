@@ -87,7 +87,7 @@ export const addFundTransfer = async (req: AuthRequest, res: Response) => {
       });
 
     const io = req.app.get("io");
-    const nextApproverId = findNextApprover(reqType, created.approval[0]); // ✅ first approval row
+    const nextApproverId = findNextApprover(reqType, created.approval); // ✅ first approval row
 
     if (nextApproverId) {
       console.log(`🔔 Emitting new_request to user_${nextApproverId}`);
@@ -120,7 +120,7 @@ export const getRequestsForApprover = async (req: AuthRequest, res: Response) =>
     const requests = await prisma.mainRequest.findMany({
       where: {
         approval: {
-          some: {
+        
             OR: [
               { notedBy: "PENDING" },
               { checkedBy: "PENDING" },
@@ -129,7 +129,7 @@ export const getRequestsForApprover = async (req: AuthRequest, res: Response) =>
               { recomApproval2: "PENDING" },
               { approveBy: "PENDING" },
             ],
-          },
+         
         },
       },
       include: {
@@ -153,10 +153,10 @@ export const getRequestsForApprover = async (req: AuthRequest, res: Response) =>
         id: 'desc',   
       },
     });
-
+ 
     // Filter: only keep requests where the NEXT approver is this user
     const filtered = requests.filter((req) => {
-      const approverId = findNextApprover(req.requestType, req.approval[0]); 
+      const approverId = findNextApprover(req.requestType, req.approval); 
       return approverId === userId;
     });
     
@@ -220,7 +220,7 @@ function hasUserWithStatus(
   userId: number,
   status: string
 ): boolean {
-  const approval = req.approval[0];
+  const approval = req.approval;
   const type = req.requestType;
   // console.log("approval", approval)
   // console.log("type", type);
@@ -415,7 +415,7 @@ export const actOnRequest = async (req: AuthRequest, res: Response) => {
       return res.status(404).json({ message: "Request not found" });
     }
 
-    const approval = request.approval[0];
+    const approval = request.approval;
     const type = request.requestType;
     if (!approval || !type) {
       return res.status(400).json({ message: "Invalid request setup" });
@@ -758,7 +758,7 @@ export const saveProposeBudgetForm = async (req: AuthRequest, res: Response) => 
 
 
     const io = req.app.get("io");
-    const nextApproverId = findNextApprover(reqType, created.approval[0]); 
+    const nextApproverId = findNextApprover(reqType, created.approval); 
 
     if (nextApproverId) {
       console.log(`🔔 Emitting new_request to user_${nextApproverId}`);
@@ -881,7 +881,7 @@ export const saveTransmittalMemo = async (req: AuthRequest, res: Response) => {
 
 
     const io = req.app.get("io");
-    const nextApproverId = findNextApprover(reqType, created.approval[0]); 
+    const nextApproverId = findNextApprover(reqType, created.approval); 
 
     if (nextApproverId) {
       console.log(`🔔 Emitting new_request to user_${nextApproverId}`);
@@ -1006,7 +1006,7 @@ export const saveDisburse = async (req: AuthRequest, res: Response) => {
 
 
     const io = req.app.get("io");
-    const nextApproverId = findNextApprover(reqType, created.approval[0]); 
+    const nextApproverId = findNextApprover(reqType, created.approval); 
 
     if (nextApproverId) {
       console.log(`🔔 Emitting new_request to user_${nextApproverId}`);
