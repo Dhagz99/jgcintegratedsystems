@@ -39,7 +39,11 @@ return (
     >
       <div className='flex flex-col gap-1 py-2'>
         <h1 className='font-semibold text-2xl'>Welcome Back!</h1>
+<<<<<<< HEAD
         <p className='font-regular'>Let's get started, Please enter your details.</p>
+=======
+        <p className='font-regular'>Let&apos;s get started, Please enter your details.</p>
+>>>>>>> tester
       </div>
       <input
         {...register("username")}
@@ -65,4 +69,8 @@ return (
     </form>
   </div>
 );
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> tester

@@ -228,4 +228,8 @@ const TravelSummaryModal: React.FC<Props> = ({ onClose, mainRequest }) => {
   );
 };
 
+<<<<<<< HEAD
 export default TravelSummaryModal;
+=======
+export default TravelSummaryModal;
+>>>>>>> tester

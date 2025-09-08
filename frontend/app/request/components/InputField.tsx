@@ -127,4 +127,8 @@ function InputField<T extends FieldValues>(props: InputProps<T>) {
   );
 }
 
+<<<<<<< HEAD
 export default InputField;
+=======
+export default InputField;
+>>>>>>> tester

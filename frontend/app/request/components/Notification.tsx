@@ -1,5 +1,5 @@
 "use client";
-import { use, useEffect } from "react";
+import { useEffect } from "react";
 import socket from "../lib/socket";
 import { toast } from "react-hot-toast";
 import { useQueryClient } from "@tanstack/react-query";
@@ -30,10 +30,31 @@ export default function NotificationsListener({ user }: { user: User }) {
 
     // Listen to our custom event
     socket.on("new_request", (data) => {
-      if(user.id == data.receiverId){
+      if(user.id == data.receiverId || user.id === data.requestedBy){
         console.log("📨 New request for approval:", data);
         toast.success(`New request: ${data.content}`);
         queryClient.invalidateQueries({ queryKey: ["approvals"] });
+      }
+    });
+
+    socket.on("request_rejected", (data) => {
+      console.log("❌ Request rejected:", data);
+      // ✅ refresh everyone's approval list
+      queryClient.invalidateQueries({ queryKey: ["approvals"] });
+    
+      // optional: toast for the reject action
+      if (user.id === data.actorId || user.id === data.receiverId) {
+        toast.error(`Request ${data.requestId} was rejected`);
+      }
+    });
+
+        // listen for rejected request
+    socket.on("request_approved", (data) => {
+      console.log(" Request approved:", data);
+      queryClient.invalidateQueries({ queryKey: ["approvals"] });
+
+      if (user.id === data.actorId || user.id === data.receiverId) {
+        toast.success(`Request ${data.requestId} was approved`);
       }
     });
 

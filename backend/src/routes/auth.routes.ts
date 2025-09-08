@@ -1,8 +1,8 @@
 import { Router } from 'express'
 import { register, login, me, logout, listUsers } from '../controllers/auth.controller'
 import { authenticate } from '../middleware/auth.middleware' // 👈 import middleware
-import { addBranch, addRequestType, deleteBranch, fetchBranches, fetchListRequestTypes, updateBranch } from '../controllers/request.controller'
-import { actOnRequest, addFundTransfer, getRequestsByUserStatus, getRequestsForApprover } from '../controllers/form.controller'
+import { addBranch, addRequestType, deleteBranch, fetchBranches, fetchListRequestTypes, fetchUserLogs, updateBranch } from '../controllers/request.controller'
+import { actOnRequest, addFundTransfer, getRequestsByUserStatus, getRequestsForApprover, saveDisburse, saveProposeBudgetForm, saveTransmittalMemo, saveTravelOrderForm } from '../controllers/form.controller'
 import { upload } from '../middleware/upload.middleware'
 import { createFund } from '../controllers/fund.controller'
 
@@ -37,6 +37,20 @@ router.post('/request/add-fund-transfer/', authenticate, addFundTransfer);
 router.get('/request/get-request-approver/', authenticate, getRequestsForApprover);
 router.get('/request/get-request-action/', authenticate, getRequestsByUserStatus);
 router.patch('/request/:id/action/', authenticate, actOnRequest);
+
+router.post('/add-travel-form',authenticate,saveTravelOrderForm);
+router.post('/add-proposed-budget',authenticate,saveProposeBudgetForm);
+router.post('/add-transmittal-memo',authenticate,saveTransmittalMemo);
+router.post('/add-disburse',authenticate,saveDisburse);
+
+//Header
+router.get('/request/user-logs', authenticate, fetchUserLogs)
+
+
+
+//CountSheet
+router.post('/request/add-count-sheet', authenticate, createFund);
+
 
 
 //CountSheet

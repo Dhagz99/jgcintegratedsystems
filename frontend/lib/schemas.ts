@@ -5,7 +5,11 @@ export const loginSchema = z.object({
     password: z.string().min(6),
 })
 
+<<<<<<< HEAD
 const RoleEnum = z.enum(["Admin", "User", "Branch", "Superadmin",  "Coordinator"]);
+=======
+const RoleEnum = z.enum(["Admin", "User", "Branch", "Superadmin", "Coordinator"]);
+>>>>>>> tester
 
 export const registerSchema = z.object({
     id: z.number().optional(),

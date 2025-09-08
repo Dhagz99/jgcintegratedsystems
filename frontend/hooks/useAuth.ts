@@ -10,7 +10,7 @@ export const useLogin = () =>{
     return useMutation({
         mutationFn: (data: LoginData) => loginUser(data),
         onSuccess: () => {
-            router.push("/request"); 
+            router.push("/request/submit-request"); 
         }
     })
 }

@@ -2,7 +2,7 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import api from "@/lib/api"; // axios instance with withCredentials:true
 
-type User = { id: number; email: string; name: string } | null;
+type User = { id: number; email: string; name: string, role: string } | null;
 
 const AuthContext = createContext<{
   user: User;

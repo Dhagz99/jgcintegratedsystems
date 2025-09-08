@@ -56,6 +56,8 @@ model User {
 
   requestLogs      RequestLogs[]
   mainForm    MainRequest[]
+  formRequestTransmittalTo formTransmittalMemo[]
+  formRequestDisburseTo formDisburse[]
 
 
   
@@ -146,6 +148,7 @@ model RequestType {
 
 model MainRequest {
   id             Int          @id @default(autoincrement())
+  referenceCode String @unique @map("reference_code")
   requestTypeId  Int?         @map("request_type_id")
   requestById Int? @map("request_by_id")
   requestFromId Int? @map("requestFrom")
@@ -160,10 +163,17 @@ model MainRequest {
   requestBy User? @relation(fields: [requestById], references: [id], onDelete: SetNull)
 
   requestFrom Branch? @relation(fields: [requestFromId], references: [id], onDelete: SetNull)
-
-  approval      ApprovalTable[]
   countSheet   CountSheet?   @relation("Main_CountSheet")
+  approval      ApprovalTable[]
+<<<<<<< HEAD
+  countSheet   CountSheet?   @relation("Main_CountSheet")
+=======
+  proposedBudget formProposedBudget[]
+  transmittalMemo formTransmittalMemo? @relation("formTransmittalMemo")
+  disburse formDisburse? @relation("formDisburse")
+>>>>>>> tester
 
+ travelOrder  formTravelOrder? @relation("formTravelOrder1")
 
   @@map("main_request")
   @@index([requestTypeId])
@@ -202,7 +212,7 @@ model ApprovalTable {
   createdAt  DateTime @default(now()) @map("created_at")
   updateAt   DateTime @updatedAt      @map("update_at")
 
-  mainRequest MainRequest? @relation(fields: [mainFormId], references: [id], onDelete: SetNull)
+  mainRequest MainRequest? @relation(fields: [mainFormId], references: [id], onDelete: Cascade)
   
 
   requestLogs  RequestLogs[]
@@ -217,9 +227,10 @@ model RequestLogs {
   approvalId Int? @map("approval_id")
   checkerType String @map("checker_type")
   approverId Int? @map("approver_id")
+  action String
   createdAt  DateTime @default(now()) @map("created_at")
 
-  approval ApprovalTable? @relation(fields: [approvalId], references: [id], onDelete: SetNull)
+  approval ApprovalTable? @relation(fields: [approvalId], references: [id], onDelete: Cascade)
   approver User? @relation(fields: [approverId], references: [id], onDelete: SetNull)
 
   @@index([approvalId])
@@ -230,6 +241,99 @@ model RequestLogs {
 }
 
 
+<<<<<<< HEAD
+=======
+// XYRLY 
+
+
+model formTravelOrder {
+    id Int @id @default(autoincrement())
+    name String? @db.VarChar(100)
+    position String? @db.VarChar(50)
+    departure_date DateTime @db.Date
+    current_date DateTime @db.Date
+    destination String? @db.VarChar(100)
+    purpose_of_travel String? @db.VarChar(100)
+    items Json?
+    total_amount Decimal? @db.Decimal(12,2)
+    createdAt  DateTime @default(now()) @db.Timestamptz(6)
+    
+    mainFormId Int @unique @map("main_form_id")
+    mainForm MainRequest? @relation("formTravelOrder1", fields: [mainFormId], references: [id], onDelete: Cascade)
+
+    @@index([mainFormId])
+    @@map("form_travel_order")
+}
+
+
+
+
+model formProposedBudget {
+  id              Int      @id @default(autoincrement())
+  description     String?  @db.VarChar(200)
+  budget          Decimal? @db.Decimal(10,2)
+  total_expenses  Decimal? @db.Decimal(10,2)
+  variance        Decimal? @db.Decimal(10,2)
+  proposed_budget Decimal? @db.Decimal(10,2)
+  remarks         String?  @db.VarChar(200)
+  expense_type    String?  @db.VarChar(50)
+  month_of        String?  @db.VarChar(50)
+  createdAt  DateTime @default(now()) @db.Timestamptz(6)
+
+  mainFormId Int @map("main_form_id")
+  mainForm MainRequest @relation(fields: [mainFormId], references: [id], onDelete: Cascade)
+
+  @@index([mainFormId])
+  @@map("form_proposed_budget")
+}
+
+
+
+
+model formTransmittalMemo {
+  id Int @id @default(autoincrement())
+  from String? @db.VarChar(100)
+  date DateTime @db.Date
+  description String? @db.VarChar(200)
+  note String? @db.VarChar(200)
+  items Json?
+
+  to_id Int?  @map("to_id")
+  requestTo   User? @relation(fields: [to_id], references: [id], onDelete: SetNull)
+
+  mainFormId Int @unique @map("main_form_id")
+  mainForm MainRequest? @relation("formTransmittalMemo", fields: [mainFormId], references: [id], onDelete: Cascade)
+  @@map("form_transmittal_memo")
+}
+
+
+
+
+
+model formDisburse {
+  id Int @id @default(autoincrement())
+  from String? @db.VarChar(200)
+  date DateTime @db.Date@map("date")
+  subject String? @db.VarChar(255)
+  description  String?   @db.Text         
+  note         String?   @db.Text  
+  total_amount Decimal? @db.Decimal(12,2)
+  items Json?
+  
+  to_id Int?  @map("to_id")
+  requestTo   User? @relation(fields: [to_id], references: [id], onDelete: SetNull)
+
+  mainFormId Int @unique @map("main_form_id")
+  mainForm MainRequest? @relation("formDisburse", fields: [mainFormId], references: [id], onDelete: Cascade)
+
+  @@map("form_disburse")
+}
+
+
+
+// Fund Replenishments
+
+>>>>>>> tester
 
 
 model CountSheet {
@@ -299,4 +403,8 @@ model TravelFund {
   // fk
   TravelSheet CountSheet? @relation("TravelFund_CountSheet", fields: [countId], references: [id], onDelete:Cascade)
   @@index([countId])
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> tester

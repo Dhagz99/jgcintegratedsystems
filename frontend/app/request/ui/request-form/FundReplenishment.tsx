@@ -7,7 +7,11 @@ import { SaveAs } from "@mui/icons-material";
 import { AddcashCountSchema, type addCcashCount } from "@/app/request/lib/request.schema";
 import ButtonComponents from "../../components/Buttons";
 import InputField from "../../components/InputField";
+<<<<<<< HEAD
 import TravelFundReplenishment, { TravelFundDTO } from "../forms/fund-replenishments/TravelReplenishment";
+=======
+import TravelFundReplenishment, { TravelFundDTO } from "../forms/fund-replenishments/TravelFundReplenishment";
+>>>>>>> tester
 import RequestModal from "../../components/RequestModal";
 import { Option1, RequestTypeDTO } from "../../type/RequestType";
 import TravelSummaryModal from "../forms/TravelSumModal";
@@ -17,6 +21,12 @@ import SweetAlert from "../../components/Swal";
 import { useFetchBranches } from "../../hooks/useRequest";
 import { useFetchUser } from "@/hooks/useAuth";
 
+<<<<<<< HEAD
+=======
+
+
+
+>>>>>>> tester
 const denominations = [1000, 500, 200, 100, 50, 20, 10, 5, 1, .25] as const;
 const formatDateTime = (date: Date) => {
   return date.toISOString().slice(0, 19).replace("T", " ");
@@ -373,5 +383,9 @@ const { reset } = methods;
       </form>
     </FormProvider>
   );
+<<<<<<< HEAD
 }
 
+=======
+}
+>>>>>>> tester

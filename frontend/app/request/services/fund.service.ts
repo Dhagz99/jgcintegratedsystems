@@ -63,4 +63,8 @@ export async function createFund(payload: FundPayload) {
     { withCredentials: true }
   );
   return data;
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> tester

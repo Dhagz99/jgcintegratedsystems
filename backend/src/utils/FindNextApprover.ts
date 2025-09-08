@@ -8,5 +8,5 @@ export function findNextApprover(reqType: any, approval: any) {
   if (appr.recomApproval2 === "PENDING") return reqType.recomApproval2?.id;
   if (appr.approveBy === "PENDING") return reqType.approveBy?.id;
 
-  return null;
+  return "APPROVED";
 }

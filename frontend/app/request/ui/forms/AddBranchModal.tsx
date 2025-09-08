@@ -3,12 +3,10 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import {
-  branchSchema,
   createBranchSchema,
   updateBranchSchema,
   type Branch,
   type CreateBranchInput,
-  type UpdateBranchInput,
 }  from "../../lib/request.schema";
 import { useEffect, useMemo } from "react";
 import { SaveAs, Close } from "@mui/icons-material";

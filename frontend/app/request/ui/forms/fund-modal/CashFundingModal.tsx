@@ -157,4 +157,8 @@ const CashFundModal: React.FC<CashFundModalProps> = ({ company, branch, rows, on
   );
 };
 
+<<<<<<< HEAD
 export default CashFundModal;
+=======
+export default CashFundModal;
+>>>>>>> tester

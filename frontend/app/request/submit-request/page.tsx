@@ -2,9 +2,15 @@
 
 import { useMemo, useState } from 'react';
 import FundTransfer from '../ui/request-form/FundTransfer';
-import ChangeFund from '../ui/request-form/ChangeFund';
 import { useFetchRequestType } from '../hooks/useRequest';
 import { RequestTypeDTO } from '../type/RequestType';
+<<<<<<< HEAD
+=======
+import TravelOrder from '../ui/request-form/TravelOrder';
+import ProposedBudget from '../ui/request-form/ProposedBudget';
+import TransmittalMemoPage from '../ui/request-form/TransmittalMemo';
+import Disburse from '../ui/request-form/Disburse';
+>>>>>>> tester
 import FundReplenishment from '../ui/request-form/FundReplenishment';
 ;
 
@@ -55,12 +61,43 @@ export default function SubmitForm() {
         </select>
       </div>
       {/* You can pass either the id or the full object to children */}
+<<<<<<< HEAD
         {(requestTypeId === 4 || requestTypeId === 3) && (
         <FundReplenishment requestTypeId={requestTypeId} requestType={selectedType} />
       )}
       {requestTypeId === 3 && (
         <FundTransfer requestTypeId={requestTypeId} requestType={selectedType} />
       )}
+=======
+        {requestTypeId === 1 && (
+          <FundTransfer requestTypeId={requestTypeId} requestType={selectedType} />
+        )}
+
+      {requestTypeId === 2 && (
+            <TravelOrder requestTypeId={requestTypeId} requestType={selectedType} />
+          )}
+
+
+      {requestTypeId === 3 && (
+            <ProposedBudget requestTypeId={requestTypeId} requestType={selectedType} />
+      )}
+
+      
+      {requestTypeId === 4 && (
+                  <TransmittalMemoPage requestTypeId={requestTypeId} requestType={selectedType} />
+            )}
+
+              
+      {requestTypeId === 5 && (
+                  <Disburse requestTypeId={requestTypeId} requestType={selectedType} />
+            )}
+
+            
+      {(requestTypeId === 6 || requestTypeId === 7) && (
+              <FundReplenishment requestTypeId={requestTypeId} requestType={selectedType} />
+            )}
+
+>>>>>>> tester
     </div>
   );
 }

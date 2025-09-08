@@ -1,7 +1,13 @@
+<<<<<<< HEAD
 import { Approval, ApproverRole, FundTransfer } from "./BaseType";
 
 import { countSheet, TravelCountSheet,CashCountSheet } from "./FundType";
 
+=======
+import { Approval, FundTransfer } from "./BaseType";
+import { AddProposedBudgetPayload, FormDataDisburse, TransmittalData, TravelOrderPaperProps } from "./FormType";
+import { countSheet } from "./FundType";
+>>>>>>> tester
  export type Option = { value: number | string; label: string };
 
 
@@ -20,6 +26,7 @@ import { countSheet, TravelCountSheet,CashCountSheet } from "./FundType";
     updateAt?: string;
 
 }
+
 
 export type Checker = {
     id: number;
@@ -66,7 +73,7 @@ export type CheckerWithName = Checker & {
 
 
 
-  export type Option1 = { id: number | string; name: string };
+  export type Option1 = { id: number | string; name: string; position?:string; };
 
 
 
@@ -96,21 +103,32 @@ export type CheckerWithName = Checker & {
     requestTypeId: number;
     requestById: number;
     requestFromId: number;
+    referenceCode: string;
     status: "PENDING" | "APPROVED" | "REJECTED";
     requestDate: string;
     remarks: string | null;
     createdAt: string;
     updateAt: string;
+<<<<<<< HEAD
     
   
     fundTransfer: FundTransfer;
     countSheet:countSheet;
+=======
+    countSheet:countSheet;
+    fundTransfer:FundTransfer;
+    travelOrder: TravelOrderPaperProps;
+    proposedBudget:AddProposedBudgetPayload;
+    transmittalMemo:TransmittalData;
+    disburse:FormDataDisburse;
+>>>>>>> tester
     approval: Approval[];
     requestFrom: RequestFrom;
     requestType: RequestType;
     requestBy: {
       id: number;
       name: string;
+      position?:string;
     };
   };
 
@@ -140,3 +158,7 @@ export type CheckerWithName = Checker & {
   }
 
 
+
+export  type DataProps = {
+    mainRequest: MainRequest | null;
+}

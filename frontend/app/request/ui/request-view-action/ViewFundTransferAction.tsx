@@ -26,7 +26,7 @@ export default function ViewFundTransferAction ({requestType, formData, onClose,
 
 
     return(
-        <div className="flex flex-col px-10 overflow-auto max-h-150">
+        <div className="flex flex-col px-10 max-h-[75vh] overflow-y-auto">
             <div className="flex flex-col justify-center items-center font-extrabold text-xl">
                 <h1>{mainRequest?.requestFrom.companyName?? ''}</h1>
                 <h1>{mainRequest?.requestFrom.branchName?? ''}</h1>

@@ -156,4 +156,8 @@ const TravelFundModal: React.FC<TravelFundModalProps> = ({ company, branch, rows
   );
 };
 
+<<<<<<< HEAD
 export default TravelFundModal;
+=======
+export default TravelFundModal;
+>>>>>>> tester

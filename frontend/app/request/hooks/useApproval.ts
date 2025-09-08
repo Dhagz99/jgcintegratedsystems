@@ -1,9 +1,9 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { getData, getDataRes } from "../services/global.sevice";
-import { Approval } from "../type/BaseType";
+import {  getDataRes } from "../services/global.sevice";
 import { MainRequest } from "../type/RequestType";
-import { useAddGlobal, useFetchGlobal } from "./useGlobal";
+import {  useFetchGlobal } from "./useGlobal";
 import api from "@/lib/api";
+import { useFetchUser } from "@/hooks/useAuth";
 
 export interface PaginatedResponse<T> {
     data: T[];
@@ -12,8 +12,9 @@ export interface PaginatedResponse<T> {
   }
   
   export const useFetchApproval = (status: string, page: number, pageSize: number) => {
+    const { data: user } = useFetchUser(); // get logged-in user (id, email, etc.)
     return useFetchGlobal<PaginatedResponse<MainRequest>>({
-      queryKey: ["approvals", status, page, pageSize],
+      queryKey: ["approvals",user?.id, status, page, pageSize],
       queryFn: () =>
         getDataRes<PaginatedResponse<MainRequest>>("/request/get-request-action", {
           status,

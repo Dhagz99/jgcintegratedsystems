@@ -2,15 +2,23 @@ import { FormattedDate } from "@/app/utils/DateFormatter";
 import ButtonComponents from "../../components/Buttons";
 import { MainRequest } from "../../type/RequestType"
 import { ApprovalTwoTone, HighlightOffTwoTone, VisibilityOutlined } from "@mui/icons-material"
-import ViewFundTransfer from "../request-view/ViewFundTransfer";
 import { useState } from "react";
 import RequestModal from "../../components/RequestModal";
 import { useApproveRequest } from "../../hooks/useApproval";
 import { showError, showSuccess } from "../../components/ToastAlert";
 import SweetAlert from "../../components/Swal";
 import ViewFundTransferAction from "../request-view-action/ViewFundTransferAction";
+<<<<<<< HEAD
 import { mainRequest } from "../../lib/request.schema";
 import TravelSummaryModal from "../forms/TravelSumModal";
+=======
+import { ViewApprovalTravelOrder } from "../request-view/ViewTravelOrder";
+import { ViewApprovalProposedBudget } from "../request-view/ViewProposedBudget";
+import { ViewApprovalTransmittalMemo } from "../request-view/ViewTransmittalMemo";
+import { ViewApprovalDisburse } from "../request-view/ViewDisburse";
+import TravelSummaryModal from "../forms/TravelSumModal";
+
+>>>>>>> tester
 
 type DataProps = {
     requests: MainRequest[];
@@ -40,7 +48,7 @@ export default function RequestCard( {requests, status ="PENDING"} : DataProps){
                 approveMutation.mutate(
                   { id: req.id, action: "APPROVED" },
                   {
-                    onSuccess: (data) => {
+                    onSuccess: () => {
                       showSuccess({ message: "Request approved!", position: "top-center" });
                     },
                     onError: (error) => {
@@ -62,7 +70,7 @@ export default function RequestCard( {requests, status ="PENDING"} : DataProps){
                 approveMutation.mutate(
                   { id: req.id, action: "REJECTED" },
                   {
-                    onSuccess: (data) => {
+                    onSuccess: () => {
                       showSuccess({ message: "Request rejected!", position: "top-center" });
                     },
                     onError: (error) => {
@@ -100,7 +108,7 @@ export default function RequestCard( {requests, status ="PENDING"} : DataProps){
                 </div>
                 <div className="flex flex-col">
                   <p className="text-[.65rem] text-gray-500">Branch:</p>
-                  <p className="text-xs font-semibold">{req.requestFrom.branchName}</p>
+                  <p className="text-xs font-semibold">{req.requestFrom?.branchName ?? ''}</p>
                 </div>
                 <div className="flex flex-col">
                   <p className="text-[.65rem] text-gray-500">Date:</p>
@@ -122,7 +130,7 @@ export default function RequestCard( {requests, status ="PENDING"} : DataProps){
                 variant="info"
                 size="xs"
                 icon={<VisibilityOutlined fontSize="small" />}
-                onClick={(e)=>handleViewRequest(req)}
+                onClick={()=>handleViewRequest(req)}
               />
               <ButtonComponents
                 label="Approve"
@@ -130,7 +138,7 @@ export default function RequestCard( {requests, status ="PENDING"} : DataProps){
                 size="xs"
                 icon={<ApprovalTwoTone fontSize="small" />}
                 disabled={status !== "PENDING"} 
-                onClick={(e)=>handleApproveRequest(req)}
+                onClick={()=>handleApproveRequest(req)}
               />
               <ButtonComponents
                 label="Reject"
@@ -138,12 +146,13 @@ export default function RequestCard( {requests, status ="PENDING"} : DataProps){
                 size="xs"
                 disabled={status !== "PENDING"} 
                 icon={<HighlightOffTwoTone fontSize="small" />}
-                onClick={(e)=>handleRejectRequest(req)}
+                onClick={()=>handleRejectRequest(req)}
               />
             </div>
           </div>
         ))
       )}
+<<<<<<< HEAD
           {/* {viewRequest && selectedRequest?.requestTypeId ===3 &&(
             <RequestModal size="lg" >
                  <ViewFundTransferAction mainRequest = {selectedRequest} onClose={closeModal} />
@@ -157,7 +166,54 @@ export default function RequestCard( {requests, status ="PENDING"} : DataProps){
             />
           </RequestModal>
         )}
+=======
+        {(viewRequest && selectedRequest?.requestTypeId === 1) &&(
+            <RequestModal size="lg" title="Fund Transfer Details" onClose={closeModal} >
+                 <ViewFundTransferAction mainRequest = {selectedRequest} onClose={closeModal} />
+            </RequestModal>
+          )}
+
+            {(viewRequest && selectedRequest?.requestTypeId === 2) &&(
+            <RequestModal size="xl" title="Travel Order Details" onClose={closeModal}>
+                 <ViewApprovalTravelOrder mainRequest = {selectedRequest} onClose={closeModal} />
+            </RequestModal>
+          )}
+
+      {(viewRequest && selectedRequest?.requestTypeId === 3) &&(
+            <RequestModal size="xxl" title="Proposed Budget Details" onClose={closeModal}>
+                 <ViewApprovalProposedBudget mainRequest = {selectedRequest} onClose={closeModal} />
+            </RequestModal>
+          )}
+
+
+        {(viewRequest && selectedRequest?.requestTypeId === 4) && (
+            <RequestModal size="xl" title="Transmittal Details" onClose={closeModal}>
+                <ViewApprovalTransmittalMemo mainRequest = {selectedRequest} onClose={closeModal} />
+            </RequestModal>
+          )}
+
+        
+        {(viewRequest && selectedRequest?.requestTypeId === 5) && (
+            <RequestModal size="xxl" title="Disburse Details" onClose={closeModal}>
+                <ViewApprovalDisburse mainRequest = {selectedRequest} onClose={closeModal} />
+            </RequestModal>
+          )}
+
+          {(viewRequest && (selectedRequest?.requestTypeId === 6 || selectedRequest?.requestTypeId === 7)) &&(
+              <RequestModal size="lg" nested title="Cash Count Sheet" onClose={closeModal}>
+                <TravelSummaryModal
+                  onClose={closeModal}
+                  mainRequest={selectedRequest} 
+                />
+              </RequestModal>
+          )}
+
+
+
+
+>>>>>>> tester
       </div>
+
         )
 }
 

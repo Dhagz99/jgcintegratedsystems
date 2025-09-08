@@ -1,4 +1,8 @@
+<<<<<<< HEAD
   import { Users } from "./RequestType";
+=======
+import { Users } from "./RequestType";
+>>>>>>> tester
   
 export type CashDemoItem = {
   denom: number;
@@ -9,6 +13,7 @@ export type CashDemoItem = {
 
 export type countSheet = {
     id: number;
+<<<<<<< HEAD
     fundType:   String;
     mainFormId: number;
     office:     String;
@@ -16,6 +21,15 @@ export type countSheet = {
     fundName:   String;
     fundAmount: number;
     reference:  String;
+=======
+    fundType:   string;
+    mainFormId: number;
+    office:     string;
+    dateCount:  Date;
+    fundName:   string;
+    fundAmount: number;
+    reference:  string;
+>>>>>>> tester
     cashDemo:   CashDemoItem[]; 
     repFund:    number;
     totalFund:  number;

@@ -5,7 +5,7 @@ import { useAddChecker, useFetchUserList, useUpdateChecker } from "../../hooks/u
 import { FormsInputs } from "../../components/FormsInputs";
 import { Close, SaveAs } from "@mui/icons-material";
 import ButtonComponents from "../../components/Buttons";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { showSuccess } from "../../components/ToastAlert";
 import SearchableInput from "../../components/SearchableInputs";
 import { CheckerWithName, Option1 } from "../../type/RequestType";
@@ -68,7 +68,7 @@ export default function AddCheckerModal({ onClose, selectedData }: AddCheckerMod
     }
   };
 
-    const { data: users = [], isLoading } = useFetchUserList();
+    const { data: users = [] } = useFetchUserList();
   
     const userData: Option1[] = users.map(c => ({
       id: c.id ?? "",    

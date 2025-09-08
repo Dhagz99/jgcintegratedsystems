@@ -67,4 +67,8 @@ const TagInput: React.FC<TagInputProps> = ({
   );
 };
 
+<<<<<<< HEAD
 export default TagInput;
+=======
+export default TagInput;
+>>>>>>> tester

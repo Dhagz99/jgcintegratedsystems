@@ -1,6 +1,14 @@
+<<<<<<< HEAD
 import { Request, Response } from "express";
 import { PrismaClient, Prisma } from "@prisma/client";
 import { AuthRequest } from "../middleware/auth.middleware";
+=======
+
+import { Request, Response } from "express";
+import { PrismaClient, Prisma } from "@prisma/client";
+import { AuthRequest } from "../middleware/auth.middleware";
+import { formatRefId } from "../utils/idConverter";
+>>>>>>> tester
 
 const prisma = new PrismaClient();
 
@@ -46,6 +54,10 @@ export const createFund = async (req: AuthRequest, res: Response) => {
           requestType: { connect: { id: Number(requestTypeId) } },
           requestFrom: { connect: { id: Number(branchId) } },
           requestBy: { connect: { id: userId } },
+<<<<<<< HEAD
+=======
+          referenceCode: "TEMP",
+>>>>>>> tester
 
           countSheet: {
               create: 
@@ -109,6 +121,10 @@ export const createFund = async (req: AuthRequest, res: Response) => {
           requestType: { connect: { id: Number(requestTypeId) } },
           requestFrom: { connect: { id: Number(branchId) } },
           requestBy: { connect: { id: userId } },
+<<<<<<< HEAD
+=======
+          referenceCode: "Temp",
+>>>>>>> tester
 
           countSheet: {
               create: 
@@ -162,6 +178,18 @@ export const createFund = async (req: AuthRequest, res: Response) => {
         },
       });
 
+<<<<<<< HEAD
+=======
+      
+          const referenceCode = formatRefId(created.id, "REF", 6);
+         
+          const updateRefCOde = await prisma.mainRequest.update({
+            where: { id: created.id },
+            data: { referenceCode: referenceCode },
+          });
+      
+
+>>>>>>> tester
       return res.status(201).json(created);
     }
 
@@ -171,5 +199,8 @@ export const createFund = async (req: AuthRequest, res: Response) => {
     return res.status(500).json({ message: "Error creating fund", error });
   }
 };
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> tester
