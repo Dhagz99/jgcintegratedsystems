@@ -2,7 +2,6 @@ import { FormattedDate } from "@/app/utils/DateFormatter";
 import ButtonComponents from "../../components/Buttons";
 import { MainRequest } from "../../type/RequestType"
 import { ApprovalTwoTone, HighlightOffTwoTone, VisibilityOutlined } from "@mui/icons-material"
-import ViewFundTransfer from "../request-view/ViewFundTransfer";
 import { useState } from "react";
 import RequestModal from "../../components/RequestModal";
 import { useApproveRequest } from "../../hooks/useApproval";
@@ -44,7 +43,7 @@ export default function RequestCard( {requests, status ="PENDING"} : DataProps){
                 approveMutation.mutate(
                   { id: req.id, action: "APPROVED" },
                   {
-                    onSuccess: (data) => {
+                    onSuccess: () => {
                       showSuccess({ message: "Request approved!", position: "top-center" });
                     },
                     onError: (error) => {
@@ -66,7 +65,7 @@ export default function RequestCard( {requests, status ="PENDING"} : DataProps){
                 approveMutation.mutate(
                   { id: req.id, action: "REJECTED" },
                   {
-                    onSuccess: (data) => {
+                    onSuccess: () => {
                       showSuccess({ message: "Request rejected!", position: "top-center" });
                     },
                     onError: (error) => {
@@ -126,7 +125,7 @@ export default function RequestCard( {requests, status ="PENDING"} : DataProps){
                 variant="info"
                 size="xs"
                 icon={<VisibilityOutlined fontSize="small" />}
-                onClick={(e)=>handleViewRequest(req)}
+                onClick={()=>handleViewRequest(req)}
               />
               <ButtonComponents
                 label="Approve"
@@ -134,7 +133,7 @@ export default function RequestCard( {requests, status ="PENDING"} : DataProps){
                 size="xs"
                 icon={<ApprovalTwoTone fontSize="small" />}
                 disabled={status !== "PENDING"} 
-                onClick={(e)=>handleApproveRequest(req)}
+                onClick={()=>handleApproveRequest(req)}
               />
               <ButtonComponents
                 label="Reject"
@@ -142,7 +141,7 @@ export default function RequestCard( {requests, status ="PENDING"} : DataProps){
                 size="xs"
                 disabled={status !== "PENDING"} 
                 icon={<HighlightOffTwoTone fontSize="small" />}
-                onClick={(e)=>handleRejectRequest(req)}
+                onClick={()=>handleRejectRequest(req)}
               />
             </div>
           </div>

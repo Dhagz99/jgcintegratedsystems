@@ -1,5 +1,4 @@
 import api from "@/lib/api";
-import { ApiResponse } from "../type/MainType";
 
 export async function addData<TRequest, TResponse>(
   url: string,

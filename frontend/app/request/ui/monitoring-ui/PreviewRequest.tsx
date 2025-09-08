@@ -10,6 +10,7 @@ import { showError, showSuccess } from "../../components/ToastAlert";
 import ViewFundTransferAction from "../request-view-action/ViewFundTransferAction";
 import RequestModal from "../../components/RequestModal";
 import { ViewApprovalTravelOrder } from "../request-view/ViewTravelOrder";
+import { FormattedDate } from "@/app/utils/DateFormatter";
 
 type dataProps = {
     mainRequest: MainRequest | null;
@@ -98,14 +99,27 @@ export default function PreviewMonitorRequest ( {mainRequest} : dataProps){
                     </div> 
                     
                     <TransferRequestBar mainRequest={mainRequest}/>
-                    <h5>{mainRequest?.requestFrom.branchName ?? ""}</h5>
-                    <div className=" flex bg-gray-400 w-full min-h-70 p-4 cursor-pointer ">
-                      <div className=" flex justify-center items-center bg-white w-full h-full hover:bg-gray-100">
-                           <p>Click to preview</p>                      
+                    <div className=" flex flex-col border border-gray-400 w-full min-h-50 cursor-pointer gap-2 p-2 pb-5 ">
+                      <div className=" flex justify-start flex-col bg-white w-full h-full hover:bg-gray-100 p-4 gap-2">
+                            <h1 className="text-center text-xl font-bold">Request Details</h1>
+                            <h5 className="text-xl font-bold">{mainRequest?.requestFrom.branchName ?? ""}</h5>
+                            <div className="flex gap-3">
+                              <label htmlFor="">Date : </label>
+                              <h5 className="font-bold"><FormattedDate value={mainRequest?.requestDate} /></h5>
+                            </div>
+                            <div className="flex gap-3">
+                              <label htmlFor="">Requested By : </label>
+                              <h5 className="font-bold">{mainRequest?.requestBy.name ?? ""}</h5>
+                            </div>
+                            {mainRequest?.requestType.id === 1 && (
+                              <div className="flex gap-3">
+                                <label htmlFor="">To : </label>
+                                <h5 className="font-bold">{mainRequest?.fundTransfer.requestTo?.name?? ""}</h5>
+                            </div>
+                            )}
+                         
                       </div>
-                    </div>
-                </div>
-                   <div className="flex justify-center gap-2">
+                      <div className="flex justify-center gap-2">
                                   <ButtonComponents
                                           label="View"
                                           variant="info"
@@ -128,7 +142,10 @@ export default function PreviewMonitorRequest ( {mainRequest} : dataProps){
                                           onClick={(e)=>handleRejectRequest()}
                                         />
                       </div>
-                       {(viewRequest && mainRequest?.requestTypeId === 1) &&(
+                    </div>
+                </div>
+                 
+                             {(viewRequest && mainRequest?.requestTypeId === 1) &&(
                                   <RequestModal size="lg" title="Fund Transfer Details" onClose={closeModal} >
                                        <ViewFundTransferAction mainRequest = {mainRequest} onClose={closeModal} />
                                   </RequestModal>

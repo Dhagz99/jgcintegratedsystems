@@ -1,8 +1,7 @@
 import { addRequest, deleteChecker, fetchChecker, updateChecker } from "../services/request.service"
 import { useAdd, useAddGlobal, useDeleteGlobal, useFetch, useFetchGlobal } from "./useGlobal";
-import { addData, deleteById, getData, updateData } from "../services/global.sevice";
+import { addData, getData, updateData } from "../services/global.sevice";
 import { Branch, CheckerData, CreateBranchInput, CreateFundTrasnfer, CreateRequestType, FormFundTransfer, RequestType, UpdateBranchInput } from "../lib/request.schema";
-import { CreateUser, RegisterData } from "@/lib/schemas";
 import { PublicUserDTO } from "@/types/auth.type";
 import { CheckerWithName, RequestTypeDTO } from "../type/RequestType";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -47,7 +46,6 @@ import api from "@/lib/api";
 
 
   type UpdateBranchVars = { id: number; data: UpdateBranchInput };
-  type DeleteVars = { id: number};
   
 
   export const useUpdateBranch = () => {
@@ -126,7 +124,7 @@ export const useFetchRequestType = () =>
         });
         return res.data;
       },
-      onSuccess: (data) => {
+      onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["users"] });
       }
     });

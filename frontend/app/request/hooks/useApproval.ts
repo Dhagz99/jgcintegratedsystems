@@ -1,8 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { getData, getDataRes } from "../services/global.sevice";
-import { Approval } from "../type/BaseType";
+import {  getDataRes } from "../services/global.sevice";
 import { MainRequest } from "../type/RequestType";
-import { useAddGlobal, useFetchGlobal } from "./useGlobal";
+import {  useFetchGlobal } from "./useGlobal";
 import api from "@/lib/api";
 import { useFetchUser } from "@/hooks/useAuth";
 
